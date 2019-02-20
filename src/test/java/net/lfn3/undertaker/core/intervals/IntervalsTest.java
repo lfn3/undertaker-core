@@ -2,11 +2,6 @@ package net.lfn3.undertaker.core.intervals;
 
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import static org.junit.Assert.*;
 
 public class IntervalsTest {
