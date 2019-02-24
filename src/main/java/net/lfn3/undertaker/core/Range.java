@@ -10,6 +10,8 @@ public class Range {
         this.length = length;
         this.ranges = ranges;
         this.offset = offset;
+
+        Debug.userAssert(isSorted(), "Lower bound of range should be less than the upper range.");
     }
 
     static Range wrap(byte[] ranges, int offset, int length) {
@@ -68,6 +70,20 @@ public class Range {
         }
 
         return true;
+    }
+
+    private boolean isSorted() {
+        for (int byteIdx = 0; byteIdx < length; byteIdx++) {
+            final int lowerBound = 0xff & get(byteIdx, Bound.LOWER);
+            final int upperBound = 0xff & get(byteIdx, Bound.UPPER);
+            if (lowerBound < upperBound) {
+                return true;
+            } else if (upperBound < lowerBound) {
+                return false;
+            }
+        }
+
+        return true; //Size 1 range
     }
 
     public enum Bound {

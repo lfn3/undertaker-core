@@ -22,19 +22,31 @@ public class Ranges {
         Debug.userAssert(length > 0, "Length must greater than zero");
         Debug.userAssert(ranges.length > 0, "Ranges must contain some values");
         Debug.userAssert(ranges.length % pairLength() == 0, "Expected ranges to contain 2x length bytes, or a multiple of that");
-        Debug.userAssert(rangesAreInCorrectDirection(ranges, length), "");
-        Debug.userAssert(areRangesSorted(ranges, length), "");
+        Debug.userAssert(areRangesSorted(), "");
         Debug.userAssert(rangesDoNotOverlap(ranges, length), "");
         Debug.userAssert(rangesDoNotCrossZero(ranges, length), "");
     }
 
-    static boolean rangesAreInCorrectDirection(byte[] ranges, int length) {
-        //TODO
-        return true;
-    }
+    boolean areRangesSorted() {
+        for (int rangeIdx = 1; rangeIdx < numberOfRanges; rangeIdx++) {
+            boolean lastUpperIsLower = false;
+            for (int byteIndex = 0; byteIndex < length; byteIndex++)
+            {
+                final byte lastUpper = get(rangeIdx - 1, byteIndex, Bound.UPPER);
+                final byte currentLower = get(rangeIdx, byteIndex, Bound.LOWER);
 
-    static boolean areRangesSorted(final byte[] ranges, int length) {
-        //TODO
+                if (lastUpper < currentLower) {
+                    lastUpperIsLower = true;
+                    break;
+                } else if (currentLower < lastUpper) {
+                    return false;
+                }
+            }
+
+            if (!lastUpperIsLower) {
+                return false;
+            }
+        }
         return true;
     }
 
