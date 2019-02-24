@@ -81,6 +81,25 @@ public class Ranges {
 
         final int offset = rangeIndex * pairLength();
 
-        return Range.fromRanges(ranges, offset, length);
+        return Range.wrap(ranges, offset, length);
+    }
+
+    public boolean isIn(final byte[] value)
+    {
+        if (value.length > length)
+        {
+            return false;
+        }
+
+        Range r;
+        for (int rangeIdx = 0; rangeIdx < numberOfRanges; rangeIdx++) {
+            r = get(rangeIdx);
+            if (r.isIn(value))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

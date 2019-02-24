@@ -42,7 +42,7 @@ public class IntervalsTest {
     }
 
     @Test
-    public void shouldGetTopLevelGeneratedValuesWhenDisplaying() {
+    public void getTopLevelGeneratedValuesWhenDisplaying() {
         intervals.setMode(IntervalsMode.DISPLAY);
 
         final Interval parentOne = intervals.next(IntervalType.COMPOSITE);
