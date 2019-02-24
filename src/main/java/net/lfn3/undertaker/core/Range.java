@@ -11,7 +11,9 @@ public class Range {
         this.ranges = ranges;
         this.offset = offset;
 
+        Debug.devAssert(offset + length <= ranges.length, "Ranges array is not long enough.");
         Debug.userAssert(isSorted(), "Lower bound of range should be less than the upper range.");
+        Debug.userAssert(doesNotCrossZero(), "A single range may not contain both negative and positive values. Please split it.");
     }
 
     static Range wrap(byte[] ranges, int offset, int length) {
@@ -84,6 +86,10 @@ public class Range {
         }
 
         return true; //Size 1 range
+    }
+
+    private boolean doesNotCrossZero() {
+        return !(get(0, Bound.LOWER) < 0 && 0 <= get(0, Bound.UPPER));
     }
 
     public enum Bound {

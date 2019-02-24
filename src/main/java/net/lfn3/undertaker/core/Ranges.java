@@ -22,9 +22,7 @@ public class Ranges {
         Debug.userAssert(length > 0, "Length must greater than zero");
         Debug.userAssert(ranges.length > 0, "Ranges must contain some values");
         Debug.userAssert(ranges.length % pairLength() == 0, "Expected ranges to contain 2x length bytes, or a multiple of that");
-        Debug.userAssert(areRangesSorted(), "");
-        Debug.userAssert(rangesDoNotOverlap(ranges, length), "");
-        Debug.userAssert(rangesDoNotCrossZero(ranges, length), "");
+        Debug.userAssert(areRangesSorted(), "Ranges should be in order from lowest to highest");
     }
 
     boolean areRangesSorted() {
@@ -47,16 +45,6 @@ public class Ranges {
                 return false;
             }
         }
-        return true;
-    }
-
-    static boolean rangesDoNotOverlap(final byte[] ranges, int length) {
-        //TODO
-        return true;
-    }
-
-    static boolean rangesDoNotCrossZero(final byte[] ranges, int length) {
-        //TODO
         return true;
     }
 
