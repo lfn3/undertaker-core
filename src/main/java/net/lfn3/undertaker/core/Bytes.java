@@ -9,7 +9,7 @@ public class Bytes {
      * This attempts to maintain the randomness from the source buffer.
      * We pick a range to move into based on the most significant byte at which the ranges start to diverge.
      *
-     * @param buf input/output buffer, should be prepopulated with random bytes.
+     * @param buf    input/output buffer, should be prepopulated with random bytes.
      * @param ranges ranges to move the value into
      */
     public static void moveIntoAnyRange(final ByteBuffer buf, final Ranges ranges) {
@@ -20,27 +20,23 @@ public class Bytes {
         Range selectedRange = null;
 
         //Only a single range, we can just skip over the first two bits of the loop below.
-        if (ranges.numberOfRanges == 1)
-        {
+        if (ranges.numberOfRanges == 1) {
             differentMsbIdx = 0;
             selectedRange = ranges.get(0);
         }
 
         for (int byteIdx = 0; byteIdx < ranges.length; byteIdx++) {
-            if (differentMsbIdx == -1)
-            {
+            if (differentMsbIdx == -1) {
                 final byte firstRangeLowerBound = ranges.get(0, byteIdx, Bound.LOWER);
                 for (int rangeIdx = 1; rangeIdx < ranges.numberOfRanges; rangeIdx++) {
                     final byte lowerBound = ranges.get(rangeIdx, byteIdx, Bound.LOWER);
-                    if (firstRangeLowerBound != lowerBound)
-                    {
+                    if (firstRangeLowerBound != lowerBound) {
                         differentMsbIdx = byteIdx;
                         break;
                     }
                 }
 
-                if (differentMsbIdx == -1)
-                {
+                if (differentMsbIdx == -1) {
                     //All the ranges are the same up until this point, just set the byte to the range value
                     buf.put(byteIdx, firstRangeLowerBound);
                     continue;
@@ -54,8 +50,7 @@ public class Bytes {
             //TODO: could possible fuse this with the above loop as well.
             final int valAtIdx = 0xff & buf.get(byteIdx);
 
-            if (selectedRange == null)
-            {
+            if (selectedRange == null) {
                 final int[] msbSkip = new int[ranges.numberOfRanges];
 
                 {
@@ -65,8 +60,7 @@ public class Bytes {
                     msbSkip[0] = (upperBound - lowerBound) + 1; //Ranges are inclusive
                 }
 
-                for (int rangeIndex = 1; rangeIndex < ranges.numberOfRanges; rangeIndex++)
-                {
+                for (int rangeIndex = 1; rangeIndex < ranges.numberOfRanges; rangeIndex++) {
                     final int lowerBound = 0xff & ranges.get(rangeIndex, byteIdx, Bound.LOWER);
                     final int upperBound = 0xff & ranges.get(rangeIndex, byteIdx, Bound.UPPER);
 
@@ -76,8 +70,7 @@ public class Bytes {
                 int withinRange = valAtIdx % msbSkip[msbSkip.length - 1];
 
                 for (int i = 0; i < msbSkip.length; i++) {
-                    if (withinRange <= msbSkip[i])
-                    {
+                    if (withinRange <= msbSkip[i]) {
                         selectedRange = ranges.get(i);
                     }
                 }

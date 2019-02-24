@@ -14,15 +14,14 @@ public class Ranges {
 
     private final byte[] ranges;
 
-    private Ranges(final byte[] ranges, final int length)
-    {
+    private Ranges(final byte[] ranges, final int length) {
         this.ranges = ranges;
         this.length = length;
         this.numberOfRanges = ranges.length / pairLength();
 
         Debug.userAssert(length > 0, "Length must greater than zero");
         Debug.userAssert(ranges.length > 0, "Ranges must contain some values");
-        Debug.userAssert( ranges.length % pairLength() == 0, "Expected ranges to contain 2x length bytes, or a multiple of that");
+        Debug.userAssert(ranges.length % pairLength() == 0, "Expected ranges to contain 2x length bytes, or a multiple of that");
         Debug.userAssert(rangesAreInCorrectDirection(ranges, length), "");
         Debug.userAssert(areRangesSorted(ranges, length), "");
         Debug.userAssert(rangesDoNotOverlap(ranges, length), "");
@@ -34,31 +33,26 @@ public class Ranges {
         return true;
     }
 
-    static boolean areRangesSorted(final byte[] ranges, int length)
-    {
+    static boolean areRangesSorted(final byte[] ranges, int length) {
         //TODO
         return true;
     }
 
-    static boolean rangesDoNotOverlap(final byte[] ranges, int length)
-    {
+    static boolean rangesDoNotOverlap(final byte[] ranges, int length) {
         //TODO
         return true;
     }
 
-    static boolean rangesDoNotCrossZero(final  byte[] ranges, int length)
-    {
+    static boolean rangesDoNotCrossZero(final byte[] ranges, int length) {
         //TODO
         return true;
     }
 
-    public static Ranges fromFlatArray(final byte[] ranges, final int length)
-    {
+    public static Ranges fromFlatArray(final byte[] ranges, final int length) {
         return new Ranges(ranges, length);
     }
 
-    public static Ranges fromArrays(final byte[] lowerBound, final byte[] upperBound, final byte[]... moreRanges)
-    {
+    public static Ranges fromArrays(final byte[] lowerBound, final byte[] upperBound, final byte[]... moreRanges) {
         Debug.userAssert(lowerBound.length == upperBound.length, "All inputs must be of same length");
         final byte[] flattened = new byte[lowerBound.length + upperBound.length + (moreRanges.length * lowerBound.length)];
         int pos = 0;
@@ -74,16 +68,14 @@ public class Ranges {
         return Ranges.fromFlatArray(flattened, lowerBound.length);
     }
 
-    private int pairLength()
-    {
+    private int pairLength() {
         return length * 2;
     }
 
-    public byte get(final int rangeIndex, final int byteIndex, Bound bound)
-    {
+    public byte get(final int rangeIndex, final int byteIndex, Bound bound) {
         Debug.userAssert(
                 rangeIndex < numberOfRanges,
-                "Range index (" + rangeIndex + ") must be less than the number of ranges (" + numberOfRanges + ")." );
+                "Range index (" + rangeIndex + ") must be less than the number of ranges (" + numberOfRanges + ").");
         Debug.userAssert(
                 byteIndex < length,
                 "Byte index (" + byteIndex + ") must be less than the length of the ranges (" + length + ").");
@@ -97,29 +89,25 @@ public class Ranges {
         }
     }
 
-    public Range get(final int rangeIndex)
-    {
+    public Range get(final int rangeIndex) {
         Debug.userAssert(
                 rangeIndex < numberOfRanges,
-                "Range index (" + rangeIndex + ") must be less than the number of ranges (" + numberOfRanges + ")." );
+                "Range index (" + rangeIndex + ") must be less than the number of ranges (" + numberOfRanges + ").");
 
         final int offset = rangeIndex * pairLength();
 
         return Range.wrap(ranges, offset, length);
     }
 
-    public boolean isIn(final byte[] value)
-    {
-        if (value.length > length)
-        {
+    public boolean isIn(final byte[] value) {
+        if (value.length > length) {
             return false;
         }
 
         Range r;
         for (int rangeIdx = 0; rangeIdx < numberOfRanges; rangeIdx++) {
             r = get(rangeIdx);
-            if (r.isIn(value))
-            {
+            if (r.isIn(value)) {
                 return true;
             }
         }

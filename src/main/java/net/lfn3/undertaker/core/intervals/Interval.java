@@ -19,13 +19,11 @@ public class Interval {
         this.type = type;
     }
 
-    void retain(Object generatedValue)
-    {
+    void retain(Object generatedValue) {
         this.generatedValue = generatedValue;
     }
 
-    void reset()
-    {
+    void reset() {
         generatedValue = null;
         type = null;
         snippable = false;

@@ -26,10 +26,8 @@ public class Range {
         }
     }
 
-    public boolean isIn(byte[] value)
-    {
-        if (value.length > length)
-        {
+    public boolean isIn(byte[] value) {
+        if (value.length > length) {
             return false;
         }
 
@@ -37,8 +35,7 @@ public class Range {
         boolean considerLowerBound = true;
 
         for (int byteIdx = 0; byteIdx < value.length; byteIdx++) {
-            if (!considerLowerBound && !considerUpperBound)
-            {
+            if (!considerLowerBound && !considerUpperBound) {
                 //We've bounced off both edges of the range
                 return true;
             }
