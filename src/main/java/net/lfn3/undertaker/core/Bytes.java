@@ -39,9 +39,12 @@ public class Bytes {
                     }
                 }
 
-                //All the ranges are the same up until this point, just set the byte to the range value
-                buf.put(byteIdx, firstRangeLowerBound);
-                continue;
+                if (differentMsbIdx == -1)
+                {
+                    //All the ranges are the same up until this point, just set the byte to the range value
+                    buf.put(byteIdx, firstRangeLowerBound);
+                    continue;
+                }
             }
 
             //At this point differentMsbIdx should contain the index of the point at which the ranges diverge.
@@ -59,7 +62,7 @@ public class Bytes {
                     final int lowerBound = 0xff & ranges.get(0, byteIdx, Bound.LOWER);
                     final int upperBound = 0xff & ranges.get(0, byteIdx, Bound.UPPER);
 
-                    msbSkip[0] = upperBound - lowerBound;
+                    msbSkip[0] = (upperBound - lowerBound) + 1; //Ranges are inclusive
                 }
 
                 for (int rangeIndex = 1; rangeIndex < ranges.numberOfRanges; rangeIndex++)
@@ -91,8 +94,13 @@ public class Bytes {
 
             final int valAtIdxInRange = (valAtIdx % range) + lowerBound;
 
+            Debug.devAssert(lowerBound <= valAtIdxInRange, "Should be gte lower bound");
+            Debug.devAssert(valAtIdxInRange <= upperBound, "Should be lte upper bound");
+
             buf.put(byteIdx, (byte) valAtIdxInRange);
         }
+
+        Debug.devAssert(selectedRange.isIn(buf.array()), "Value should have been moved into this range");
     }
 
 }

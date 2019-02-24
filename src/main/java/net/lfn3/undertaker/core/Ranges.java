@@ -50,6 +50,23 @@ public class Ranges {
         return new Ranges(ranges, length);
     }
 
+    public static Ranges fromArrays(final byte[] lowerBound, final byte[] upperBound, final byte[]... moreRanges)
+    {
+        Debug.userAssert(lowerBound.length == upperBound.length, "All inputs must be of same length");
+        final byte[] flattened = new byte[lowerBound.length + upperBound.length + (moreRanges.length * lowerBound.length)];
+        int pos = 0;
+        System.arraycopy(lowerBound, 0, flattened, pos, lowerBound.length);
+        pos += lowerBound.length;
+        System.arraycopy(upperBound, 0, flattened, pos, upperBound.length);
+        pos += upperBound.length;
+        for (byte[] arr : moreRanges) {
+            Debug.userAssert(arr.length == lowerBound.length, "All inputs must be of same length");
+            System.arraycopy(arr, 0, flattened, pos, arr.length);
+            pos += arr.length;
+        }
+        return Ranges.fromFlatArray(flattened, lowerBound.length);
+    }
+
     private int pairLength()
     {
         return length * 2;
