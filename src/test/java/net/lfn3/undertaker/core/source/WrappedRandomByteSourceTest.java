@@ -14,8 +14,8 @@ public class WrappedRandomByteSourceTest {
     @Test
     public void exercise() {
         //Relying on the assertions.
-        final int iterations = 1000;
-        final int rangeLength = 5;
+        final int iterations = 10000;
+        final int rangeLength = 128;
 
         for (int i = 0; i < iterations; i++) {
             Ranges r = generateRanges(rangeLength);
