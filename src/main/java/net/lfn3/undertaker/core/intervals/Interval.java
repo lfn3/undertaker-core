@@ -1,5 +1,7 @@
 package net.lfn3.undertaker.core.intervals;
 
+import net.lfn3.undertaker.core.Debug;
+
 public class Interval {
     private IntervalType type;
     private Object generatedValue;
@@ -7,10 +9,10 @@ public class Interval {
     private boolean snippable;
 
     void populate(IntervalType type, boolean markChildrenAsSnippable, boolean snippable) {
-        assert this.type == null : "Interval was not reset before attempting reuse.";
-        assert this.generatedValue == null : "Interval was not reset before attempting reuse.";
-        assert !this.snippable : "Interval was not reset before attempting reuse.";
-        assert !this.markChildrenAsSnippable : "Interval was not reset before attempting reuse.";
+        Debug.devAssert(this.type == null, "Interval was not reset before attempting reuse.");
+        Debug.devAssert(this.generatedValue == null, "Interval was not reset before attempting reuse.");
+        Debug.devAssert(!this.snippable, "Interval was not reset before attempting reuse.");
+        Debug.devAssert(!this.markChildrenAsSnippable, "Interval was not reset before attempting reuse.");
 
         this.snippable = snippable;
         this.markChildrenAsSnippable = markChildrenAsSnippable;

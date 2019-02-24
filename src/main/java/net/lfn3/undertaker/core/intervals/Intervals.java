@@ -1,5 +1,7 @@
 package net.lfn3.undertaker.core.intervals;
 
+import net.lfn3.undertaker.core.Debug;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,17 +34,6 @@ public class Intervals {
         saved.clear();
     }
 
-    private boolean checkParentIsNotValue(final Interval parent)
-    {
-        if (!intervalStack.isEmpty())
-        {
-            assert parent.getType() == IntervalType.COMPOSITE :
-                    "You tried to add a child interval under a value interval: " + parent;
-        }
-
-       return true;
-    }
-
     public Interval next(final IntervalType type) {
         return next(type, false);
     }
@@ -53,7 +44,8 @@ public class Intervals {
         if (!intervalStack.isEmpty())
         {
             final Interval parent = intervalStack.peek();
-            assert checkParentIsNotValue(parent);
+            Debug.userAssert(parent.getType() == IntervalType.COMPOSITE,
+                    "You tried to add a child interval under a value interval: " + parent);
             snippable = parent.shouldMarkChildrenAsSnippable();
         } else {
             snippable = false;
@@ -80,7 +72,7 @@ public class Intervals {
         return retainForShrinking || retainForDisplay;
     }
 
-    boolean shouldRetainGeneratedObject() {
+    private boolean shouldRetainGeneratedObject() {
         final boolean retainForDisplay = mode == IntervalsMode.DISPLAY && intervalStack.isEmpty();
         final boolean retainForDebug = mode == IntervalsMode.DEBUG;
         return retainForDisplay || retainForDebug;
@@ -91,8 +83,8 @@ public class Intervals {
         //TODO: can we validate if a composite interval had no children?
         Interval popped = intervalStack.pop();
 
-        assert popped == interval :
-                "Interval popped off in the wrong order, we expected to be done with " + popped + " next.";
+        Debug.userAssert( popped == interval,
+                "Interval popped off in the wrong order, we expected to be done with " + popped + " next.");
 
         if (shouldRetainInterval(interval)) {
             saved.add(interval);
@@ -107,7 +99,8 @@ public class Intervals {
     }
 
     public Collection<Object> getGeneratedValues() {
-        assert mode != IntervalsMode.FAST : "No point in trying to get the generated values back out if nothing has been saved";
+        Debug.devAssert(mode != IntervalsMode.FAST,
+        "No point in trying to get the generated values back out if nothing has been saved");
 
         return saved.stream().map(Interval::getGeneratedValue).collect(Collectors.toList());
     }
