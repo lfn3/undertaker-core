@@ -26,6 +26,7 @@ public class Ranges {
         Debug.userAssert(rangesAreInCorrectDirection(ranges, length), "");
         Debug.userAssert(areRangesSorted(ranges, length), "");
         Debug.userAssert(rangesDoNotOverlap(ranges, length), "");
+        Debug.userAssert(rangesDoNotCrossZero(ranges, length), "");
     }
 
     static boolean rangesAreInCorrectDirection(byte[] ranges, int length) {
@@ -40,6 +41,12 @@ public class Ranges {
     }
 
     static boolean rangesDoNotOverlap(final byte[] ranges, int length)
+    {
+        //TODO
+        return true;
+    }
+
+    static boolean rangesDoNotCrossZero(final  byte[] ranges, int length)
     {
         //TODO
         return true;
