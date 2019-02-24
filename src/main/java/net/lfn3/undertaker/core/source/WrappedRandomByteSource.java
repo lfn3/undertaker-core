@@ -28,8 +28,4 @@ public class WrappedRandomByteSource implements ByteSource {
         return buf;
     }
 
-    @Override
-    public void fill(byte[] bytes) {
-        wrapped.nextBytes(bytes);
-    }
 }

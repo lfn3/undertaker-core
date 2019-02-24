@@ -1,16 +1,11 @@
 package net.lfn3.undertaker.core.source;
 
 import net.lfn3.undertaker.core.Ranges;
-import net.lfn3.undertaker.core.SourceRule;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Arrays;
 
 public class WrappedRandomByteSourceTest {
-    @Rule
-    public final SourceRule sourceRule = new SourceRule();
-
     @Test
     public void exercise() {
         //Relying on the assertions.
