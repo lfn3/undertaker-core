@@ -5,10 +5,10 @@ public class Debug {
     static boolean devDebug = true; //TODO: Read from... env var?
 
     public static void userAssert(boolean condition, String message) {
-        assert userDebug && condition : message;
+        assert !userDebug || condition : message;
     }
 
     public static void devAssert(boolean condition, String message) {
-        assert devDebug && condition : message;
+        assert !devDebug || condition : message;
     }
 }
