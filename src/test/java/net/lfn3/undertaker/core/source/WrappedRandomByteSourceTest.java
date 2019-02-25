@@ -1,27 +1,52 @@
 package net.lfn3.undertaker.core.source;
 
 import net.lfn3.undertaker.core.Ranges;
+import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNot;
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class WrappedRandomByteSourceTest {
+
+    public static final int ITERATIONS = 10000;
+    public static final int RANGE_LENGTH = 128;
+    private static final Ranges RANGES = generateRanges(RANGE_LENGTH);
+
     @Test
     public void exercise() {
         //Relying on the assertions.
-        final int iterations = 10000;
-        final int rangeLength = 128;
-
-        for (int i = 0; i < iterations; i++) {
-            Ranges r = generateRanges(rangeLength);
-
-            WrappedRandomByteSource wrs = new WrappedRandomByteSource();
-
-            wrs.nextBytes(r);
+        for (int i = 0; i < ITERATIONS; i++) {
+            new WrappedRandomByteSource().nextBytes(RANGES);
         }
     }
 
-    private Ranges generateRanges(final int rangeLength) {
+    @Test
+    public void shouldProduceSameBytesBeforeAndAfterReset() {
+        for (int i = 0; i < ITERATIONS; i++) {
+            WrappedRandomByteSource wrs = new WrappedRandomByteSource();
+            final ByteBuffer beforeReset = wrs.nextBytes(RANGES);
+            wrs.reset();
+            final ByteBuffer afterReset = wrs.nextBytes(RANGES);
+            Assert.assertArrayEquals(beforeReset.array(), afterReset.array());
+        }
+    }
+
+    @Test
+    public void shouldNotProudceSameBytesAfterNext() {
+        WrappedRandomByteSource wrs = new WrappedRandomByteSource();
+        ByteBuffer beforeNext = wrs.nextBytes(RANGES);
+        for (int i = 0; i < ITERATIONS; i++) {
+            wrs.next();
+            final ByteBuffer afterNext = wrs.nextBytes(RANGES);
+            Assert.assertThat(beforeNext, IsNot.not(IsEqual.equalTo(afterNext)));
+            beforeNext = afterNext;
+        }
+    }
+
+    private static Ranges generateRanges(final int rangeLength) {
         final byte[] negLower = new byte[rangeLength];
         Arrays.fill(negLower, (byte) -128);
 

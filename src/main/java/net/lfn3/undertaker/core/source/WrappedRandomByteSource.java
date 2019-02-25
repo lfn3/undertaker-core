@@ -10,9 +10,12 @@ import static net.lfn3.undertaker.core.Debug.devAssert;
 
 public class WrappedRandomByteSource implements ByteSource {
     private final Random wrapped;
+    private long seed;
 
     public WrappedRandomByteSource() {
         wrapped = new Random();
+        seed = wrapped.nextLong();
+        wrapped.setSeed(seed);
     }
 
     @Override
@@ -28,4 +31,14 @@ public class WrappedRandomByteSource implements ByteSource {
         return buf;
     }
 
+    @Override
+    public void reset() {
+        wrapped.setSeed(seed);
+    }
+
+    @Override
+    public void next() {
+        seed = wrapped.nextLong();
+        wrapped.setSeed(seed);
+    }
 }

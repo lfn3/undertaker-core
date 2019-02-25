@@ -6,4 +6,8 @@ import java.nio.ByteBuffer;
 
 public interface ByteSource {
     ByteBuffer nextBytes(Ranges ranges);
+
+    void reset();
+
+    void next();
 }
