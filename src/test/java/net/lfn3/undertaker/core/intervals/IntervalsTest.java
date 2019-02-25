@@ -2,6 +2,8 @@ package net.lfn3.undertaker.core.intervals;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 public class IntervalsTest {
@@ -17,19 +19,10 @@ public class IntervalsTest {
     }
 
     @Test
-    public void clearsIntervalOnDone() {
-        final Interval interval = intervals.next(IntervalType.VALUE);
-
-        intervals.done(interval, null);
-
-        assertNull(interval.getType());
-    }
-
-    @Test
     public void retainsSnippableIntervalsWhenShrinking() {
         intervals.setMode(IntervalsMode.SHRINK);
 
-        final Interval one = intervals.next(IntervalType.COMPOSITE, true);
+        final Interval one = intervals.next(IntervalType.COMPOSITE, EnumSet.of(IntervalFlag.SNIPPABLE_CHILDREN));
         final Interval child = intervals.next(IntervalType.COMPOSITE);
 
         intervals.done(child, null);
@@ -37,8 +30,6 @@ public class IntervalsTest {
 
         final Object[] generatedValues = intervals.getGeneratedValues().toArray();
         assertArrayEquals(new Object[]{ null }, generatedValues); //We don't hang onto the generated object
-
-        assertSame(one, intervals.next(IntervalType.VALUE)); //But we won't serve back up the child interval either.
     }
 
     @Test

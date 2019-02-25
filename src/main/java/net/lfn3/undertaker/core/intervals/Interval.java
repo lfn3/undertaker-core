@@ -2,49 +2,82 @@ package net.lfn3.undertaker.core.intervals;
 
 import net.lfn3.undertaker.core.Debug;
 
-public class Interval {
+import java.util.EnumSet;
+
+class Interval {
+    static final Interval NONE = new Interval();
+
     private IntervalType type;
+    EnumSet<IntervalFlag> flags;
+
     private Object generatedValue;
-    private boolean markChildrenAsSnippable;
-    private boolean snippable;
 
-    void populate(IntervalType type, boolean markChildrenAsSnippable, boolean snippable) {
-        Debug.devAssert(this.type == null, "Interval was not reset before attempting reuse.");
-        Debug.devAssert(this.generatedValue == null, "Interval was not reset before attempting reuse.");
-        Debug.devAssert(!this.snippable, "Interval was not reset before attempting reuse.");
-        Debug.devAssert(!this.markChildrenAsSnippable, "Interval was not reset before attempting reuse.");
+    void populate(final IntervalType type, final EnumSet<IntervalFlag> flags) {
+        assertNotNone();
+        assertUnpopulated();
+        Debug.devAssert(flags != null, "Flags may not be null.");
 
-        this.snippable = snippable;
-        this.markChildrenAsSnippable = markChildrenAsSnippable;
         this.type = type;
+        this.flags = flags;
     }
 
     void retain(Object generatedValue) {
+        assertPopulated();
+
         this.generatedValue = generatedValue;
     }
 
     void reset() {
+        assertPopulated();
+
         generatedValue = null;
         type = null;
-        snippable = false;
-        markChildrenAsSnippable = false;
+        flags = null;
     }
+
+    //region assertions
+    private void assertUnpopulated() {
+        Debug.devAssert(this.type == null, "Interval was not reset before attempting reuse.");
+        Debug.devAssert(this.generatedValue == null, "Interval was not reset before attempting reuse.");
+        Debug.devAssert(this.flags == null, "Interval was not reset before attempting reuse.");
+    }
+
+    private void assertNotNone()
+    {
+        Debug.devAssert(this != NONE, "You're trying to actually use the NONE interval");
+    }
+
+    private void assertPopulated()
+    {
+        assertNotNone();
+        Debug.devAssert(this.type != null, "Interval hasn't been populated yet");
+        Debug.devAssert(this.flags != null, "Interval hasn't been populated yet");
+    }
+    // endregion assertions
 
     // region getters
     IntervalType getType() {
+        assertPopulated();
+
         return this.type;
     }
 
     Object getGeneratedValue() {
+        assertPopulated();
+
         return this.generatedValue;
     }
 
-    boolean isSnippable() {
-        return this.snippable;
+    EnumSet<IntervalFlag> getFlags() {
+        assertPopulated();
+
+        return this.flags;
     }
 
-    boolean shouldMarkChildrenAsSnippable() {
-        return markChildrenAsSnippable;
+    boolean hasFlag(IntervalFlag flag) {
+        assertPopulated();
+
+        return this.flags.contains(flag);
     }
     // endregion
 }

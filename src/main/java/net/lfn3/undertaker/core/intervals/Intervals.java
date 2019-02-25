@@ -5,6 +5,8 @@ import net.lfn3.undertaker.core.Debug;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static net.lfn3.undertaker.core.intervals.IntervalFlag.*;
+
 //TODO: might be worth splitting this up, particularly if we can separate the "fast" mode from everything else.
 public class Intervals {
     private final Queue<Interval> intervalPool;
@@ -32,18 +34,26 @@ public class Intervals {
     }
 
     public Interval next(final IntervalType type) {
-        return next(type, false);
+        return next(type, NONE);
     }
 
-    public Interval next(final IntervalType type, boolean shouldMarkChildrenAsSnippable) {
-        final boolean snippable;
-        if (!intervalStack.isEmpty()) {
-            final Interval parent = intervalStack.peek();
+    public Interval next(final IntervalType type, final EnumSet<IntervalFlag> flags) {
+        for (Interval parent : intervalStack) {
             Debug.userAssert(parent.getType() == IntervalType.COMPOSITE,
                     "You tried to add a child interval under a value interval: " + parent);
-            snippable = parent.shouldMarkChildrenAsSnippable();
-        } else {
-            snippable = false;
+            if (parent.hasFlag(IntervalFlag.SNIPPABLE_CHILDREN))
+            {
+                flags.add(IntervalFlag.SNIPPABLE);
+            }
+            if (parent.hasFlag(IntervalFlag.UNIQUE_CHILDREN))
+            {
+                flags.add(IntervalFlag.UNIQUE);
+            }
+        }
+
+        if (!issueInterval(flags))
+        {
+            return Interval.NONE;
         }
 
         Interval interval = intervalPool.poll();
@@ -51,41 +61,50 @@ public class Intervals {
             interval = new Interval();
         }
 
-        interval.populate(type, shouldMarkChildrenAsSnippable, snippable);
+        interval.populate(type, flags);
 
         intervalStack.push(interval);
 
         return interval;
     }
 
-    private boolean shouldRetainInterval(final Interval interval) {
-        final boolean retainForShrinking = mode == IntervalsMode.SHRINK && interval.isSnippable();
-        final boolean retainForDisplay = shouldRetainGeneratedObject();
+    private boolean issueInterval(final EnumSet<IntervalFlag> flags) {
+        final boolean unique = flags.contains(UNIQUE_CHILDREN);
+        final boolean shrinking = mode == IntervalsMode.SHRINK && (flags.contains(SNIPPABLE) || flags.contains(SNIPPABLE_CHILDREN));
+        final boolean display = needGeneratedObject();
 
-        return retainForShrinking || retainForDisplay;
+        return unique || shrinking || display;
     }
 
-    private boolean shouldRetainGeneratedObject() {
+    private boolean saveInterval(final EnumSet<IntervalFlag> flags) {
+        final boolean shrinking = mode == IntervalsMode.SHRINK && flags.contains(SNIPPABLE);
+        return shrinking || needGeneratedObject();
+    }
+
+    private boolean needGeneratedObject() {
         final boolean retainForDisplay = mode == IntervalsMode.DISPLAY && intervalStack.isEmpty();
         final boolean retainForDebug = mode == IntervalsMode.DEBUG;
         return retainForDisplay || retainForDebug;
     }
 
     void done(final Interval interval, Object generatedValue) {
+        if (interval == Interval.NONE)
+        {
+            return;
+        }
+
         //TODO: can we validate if a composite interval had no children?
         Interval popped = intervalStack.pop();
 
         Debug.userAssert(popped == interval,
                 "Interval popped off in the wrong order, we expected to be done with " + popped + " next.");
 
-        if (shouldRetainInterval(interval)) {
+        if (saveInterval(interval.flags))
+        {
             saved.add(interval);
-            if (shouldRetainGeneratedObject()) {
-                interval.retain(generatedValue);
-            }
-        } else {
-            interval.reset();
-            this.intervalPool.add(interval);
+        }
+        if (needGeneratedObject()) {
+            interval.retain(generatedValue);
         }
     }
 
