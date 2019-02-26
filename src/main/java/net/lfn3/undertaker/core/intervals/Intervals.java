@@ -14,6 +14,11 @@ public class Intervals {
     private final List<Interval> saved = new ArrayList<>();
     private IntervalsMode mode = IntervalsMode.FAST;
 
+    public Intervals()
+    {
+        this(64);
+    }
+
     public Intervals(final int startingSize) {
         intervalPool = new ArrayDeque<>(startingSize);
         for (int i = 0; i < startingSize; i++) {
