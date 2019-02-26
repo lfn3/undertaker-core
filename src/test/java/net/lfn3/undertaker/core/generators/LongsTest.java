@@ -10,19 +10,27 @@ public class LongsTest {
 
     private final Intervals intervals = new Intervals(1);
     private final ByteSource randomSource = new WrappedRandomByteSource();
-    private final Longs defaultGen = new Longs(randomSource, intervals);
+    private final Booleans booleans = new Booleans(randomSource, intervals);
+    private final Longs defaultGen = new Longs(randomSource, intervals, booleans);
 
     @Test
-    public void canGenerateLongs() {
-        defaultGen.nextLong();
+    public void generateLongs() {
+        defaultGen.next();
     }
 
     @Test
-    public void canGenerateLongsInRange() {
+    public void generateLongsInRange() {
         for (int i = 0; i < ITERATIONS; i++) {
-            final long max = defaultGen.nextLong(Long.MAX_VALUE - 1);
-            final long min = defaultGen.nextLong(max);
-            defaultGen.nextLong(min, max);
+            final long max = defaultGen.next(Long.MAX_VALUE - 1);
+            final long min = defaultGen.next(max);
+            defaultGen.next(min, max);
+        }
+    }
+
+    @Test
+    public void generateLongArrays() {
+        for (int i = 0; i < ITERATIONS; i++) {
+            defaultGen.nextArray();
         }
     }
 }

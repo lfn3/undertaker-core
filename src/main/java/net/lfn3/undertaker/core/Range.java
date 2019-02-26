@@ -4,7 +4,7 @@ public class Range {
     final int length;
 
     private final int offset;
-    private final byte[] ranges;
+    final byte[] ranges;
 
     private Range(byte[] ranges, int offset, int length) {
         this.length = length;
@@ -14,6 +14,12 @@ public class Range {
         Debug.devAssert(offset + length <= ranges.length, "Ranges array is not long enough.");
         Debug.userAssert(isSorted(), "Lower bound of range should be less than the upper range.");
         Debug.userAssert(doesNotCrossZero(), "A single range may not contain both negative and positive values. Please split it.");
+    }
+
+    public Range(byte[] range) {
+        this(range, 0, range.length / 2);
+
+        Debug.userAssert(range.length % 2 == 0, "Range length must be a multiple of two, since there's an upper and lower bound.");
     }
 
     static Range wrap(byte[] ranges, int offset, int length) {

@@ -48,6 +48,10 @@ public class Ranges {
         return true;
     }
 
+    public static Ranges fromRange(final Range range) {
+        return new Ranges(range.ranges, range.length);
+    }
+
     public static Ranges fromFlatArray(final byte[] ranges, final int length) {
         return new Ranges(ranges, length);
     }
