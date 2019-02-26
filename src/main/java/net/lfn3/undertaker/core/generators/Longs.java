@@ -16,6 +16,17 @@ public class Longs {
     private final ByteSource byteSource;
     private final Intervals intervals;
     private final Booleans booleans;
+    private static final Ranges DEFAULT_RANGES;
+
+    static {
+        final byte[] range = new byte[Long.BYTES * 4];
+        Arrays.fill(range, 0, Long.BYTES, Byte.MIN_VALUE);
+        Arrays.fill(range, Long.BYTES, Long.BYTES * 2, (byte) -1);
+        Arrays.fill(range, Long.BYTES * 2, Long.BYTES * 3, (byte) 0);
+        Arrays.fill(range, Long.BYTES * 3, Long.BYTES * 4, Byte.MAX_VALUE);
+
+        DEFAULT_RANGES = Ranges.fromFlatArray(range, Long.BYTES);
+    }
 
     public Longs(ByteSource byteSource, Intervals intervals, Booleans booleans) {
         this.byteSource = byteSource;
@@ -24,15 +35,7 @@ public class Longs {
     }
 
     public long next() {
-        final byte[] range = new byte[Long.BYTES * 4];
-        Arrays.fill(range, 0, Long.BYTES, Byte.MIN_VALUE);
-        Arrays.fill(range, Long.BYTES, Long.BYTES * 2, (byte) -1);
-        Arrays.fill(range, Long.BYTES * 2, Long.BYTES * 3, (byte) 0);
-        Arrays.fill(range, Long.BYTES * 3, Long.BYTES * 4, Byte.MAX_VALUE);
-
-        final Ranges ranges = Ranges.fromFlatArray(range, Long.BYTES);
-
-        return next(ranges);
+        return next(DEFAULT_RANGES);
     }
 
     public long next(long max) {
