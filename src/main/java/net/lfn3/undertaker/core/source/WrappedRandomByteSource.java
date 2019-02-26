@@ -31,12 +31,10 @@ public class WrappedRandomByteSource implements ByteSource {
         return buf;
     }
 
-    @Override
     public void reset() {
         wrapped.setSeed(seed);
     }
 
-    @Override
     public void next() {
         seed = wrapped.nextLong();
         wrapped.setSeed(seed);

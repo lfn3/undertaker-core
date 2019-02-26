@@ -87,7 +87,7 @@ public class Intervals {
         return retainForDisplay || retainForDebug;
     }
 
-    void done(final Interval interval, Object generatedValue) {
+    public void done(final Interval interval, Object generatedValue) {
         if (interval == Interval.NONE)
         {
             return;

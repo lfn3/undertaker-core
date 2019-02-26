@@ -79,11 +79,14 @@ public class Bytes {
             // Actually move it into the selected range (finally!)
 
             Debug.devAssert(selectedRange != null, "Selected range should have been set by this point.");
-            @SuppressWarnings("ConstantConditions") // There's a DIY assertion right there.
+            //There's a DIY assertion right above this.
+            //noinspection ConstantConditions
             final int lowerBound = 0xff & selectedRange.get(byteIdx, Bound.LOWER);
             final int upperBound = 0xff & selectedRange.get(byteIdx, Bound.UPPER);
 
-            final int range = upperBound - lowerBound;
+            final int range = (upperBound - lowerBound) + 1;
+
+            Debug.devAssert(Integer.signum(range) > 0, "Ranges must contain at least a single value");
 
             final int valAtIdxInRange = (valAtIdx % range) + lowerBound;
 
@@ -93,6 +96,8 @@ public class Bytes {
             buf.put(byteIdx, (byte) valAtIdxInRange);
         }
 
+        //It is an assertion.
+        //noinspection ConstantConditions
         Debug.devAssert(selectedRange.isIn(buf.array()), "Value should have been moved into this range");
     }
 

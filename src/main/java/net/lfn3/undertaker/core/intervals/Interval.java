@@ -4,7 +4,7 @@ import net.lfn3.undertaker.core.Debug;
 
 import java.util.EnumSet;
 
-class Interval {
+public class Interval {
     static final Interval NONE = new Interval();
 
     private IntervalType type;

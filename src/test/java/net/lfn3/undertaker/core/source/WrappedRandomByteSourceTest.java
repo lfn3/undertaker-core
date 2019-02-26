@@ -10,10 +10,9 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class WrappedRandomByteSourceTest {
-
-    public static final int ITERATIONS = 10000;
-    public static final int RANGE_LENGTH = 128;
-    private static final Ranges RANGES = generateRanges(RANGE_LENGTH);
+    private static final int ITERATIONS = 10000;
+    private static final int RANGE_LENGTH = 128;
+    private static final Ranges RANGES = generateRanges();
 
     @Test
     public void exercise() {
@@ -46,17 +45,17 @@ public class WrappedRandomByteSourceTest {
         }
     }
 
-    private static Ranges generateRanges(final int rangeLength) {
-        final byte[] negLower = new byte[rangeLength];
+    private static Ranges generateRanges() {
+        final byte[] negLower = new byte[RANGE_LENGTH];
         Arrays.fill(negLower, (byte) -128);
 
-        final byte[] negUpper = new byte[rangeLength];
+        final byte[] negUpper = new byte[RANGE_LENGTH];
         Arrays.fill(negUpper, (byte) -1);
 
-        final byte[] posLower = new byte[rangeLength];
+        final byte[] posLower = new byte[RANGE_LENGTH];
         Arrays.fill(posLower, (byte) 0);
 
-        final byte[] posUpper = new byte[rangeLength];
+        final byte[] posUpper = new byte[RANGE_LENGTH];
         Arrays.fill(posUpper, (byte) 127);
 
         return Ranges.fromArrays(negLower, negUpper, posLower, posUpper);
