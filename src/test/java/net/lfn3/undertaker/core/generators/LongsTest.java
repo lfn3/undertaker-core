@@ -11,6 +11,7 @@ public class LongsTest {
     private final Intervals intervals = new Intervals(1);
     private final ByteSource randomSource = new WrappedRandomByteSource();
     private final Booleans booleans = new Booleans(randomSource, intervals);
+    private final Integers integers = new Integers(randomSource, intervals, booleans);
     private final Longs defaultGen = new Longs(randomSource, intervals, booleans);
 
     @Test
@@ -31,6 +32,15 @@ public class LongsTest {
     public void generateLongArrays() {
         for (int i = 0; i < ITERATIONS; i++) {
             defaultGen.nextArray();
+        }
+    }
+
+    @Test
+    public void generateSizedLongArrays() {
+        for (int i = 0; i < ITERATIONS; i++) {
+            final int max = integers.next(1, Longs.DEFAULT_MAX_LENGTH);
+            final int min = integers.next(0, max);
+            defaultGen.nextArray(min, max);
         }
     }
 }

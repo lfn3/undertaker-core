@@ -18,6 +18,11 @@ public class WrappedRandomByteSource implements ByteSource {
         wrapped.setSeed(seed);
     }
 
+    public WrappedRandomByteSource(final long seed) {
+        wrapped = new Random(seed);
+        this.seed = seed;
+    }
+
     @Override
     public ByteBuffer nextBytes(Ranges ranges) {
         byte[] unmapped = new byte[ranges.length];
