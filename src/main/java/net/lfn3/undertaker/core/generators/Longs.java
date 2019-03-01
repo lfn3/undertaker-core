@@ -47,7 +47,7 @@ public class Longs {
         final Ranges ranges;
         final int minSig = Long.signum(min);
         final int maxSig = Long.signum(max);
-        final boolean bothPositive = minSig <= 0 && maxSig <= 0;
+        final boolean bothPositive =  0 <= minSig  && 0 <= maxSig;
         if (minSig == maxSig || bothPositive) {
             //Don't need to split the range
             rangeArr = new byte[Long.BYTES * 2];
@@ -82,7 +82,7 @@ public class Longs {
     public long next(Ranges ranges) {
         final Interval interval = intervals.next(IntervalType.VALUE);
         final ByteBuffer buf = byteSource.nextBytes(ranges);
-        final long ret = buf.getLong();
+        final long ret = buf.getLong(0);
 
         intervals.done(interval, ret);
         return ret;
@@ -93,23 +93,32 @@ public class Longs {
         return booleans.nextBoolean(5);
     }
 
-    private final static int DEFAULT_MAX_LENGTH = 2048;
+    public final static int DEFAULT_MAX_LENGTH = 2048;
 
     public long[] nextArray() {
         return nextArray(DEFAULT_MAX_LENGTH);
     }
 
     public long[] nextArray(final int maxLength) {
+        return nextArray(0, maxLength);
+    }
+
+    public long[] nextArray(final int minLength, final int maxLength) {
+        Debug.userAssert(minLength <= maxLength,
+                "minLength (" + minLength + ") should be less than or equal to maxLength (" + maxLength + ")");
+
         final long[] tmp = new long[maxLength];
 
         final Interval collInterval = intervals.next(IntervalType.COMPOSITE, EnumSet.of(IntervalFlag.SNIPPABLE_CHILDREN));
         int i = 0;
-        for (;i < maxLength && shouldGenerateNext(); i++) {
+        for (; i < minLength || (i < maxLength && shouldGenerateNext()); i++) {
             tmp[i] = next();
         }
         final long[] ret = Arrays.copyOf(tmp, i);
         intervals.done(collInterval, ret);
         Debug.devAssert(ret.length <= maxLength,
+                "Array length (" + ret.length + ") should be less than or equal to supplied max (" + maxLength + ")");
+        Debug.devAssert(ret.length >= minLength,
                 "Array length (" + ret.length + ") should be less than or equal to supplied max (" + maxLength + ")");
         return ret;
     }

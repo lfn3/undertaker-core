@@ -25,6 +25,6 @@ public class LongsBench {
     @Benchmark
     public long[] generateLongArray()
     {
-        return longs.nextArray();
+        return longs.nextArray(1024, 1024);
     }
 }
