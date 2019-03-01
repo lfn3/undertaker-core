@@ -25,6 +25,9 @@ public class Bytes {
             selectedRange = ranges.get(0);
         }
 
+        boolean considerUpperBound = true;
+        boolean considerLowerBound = true;
+
         for (int byteIdx = 0; byteIdx < ranges.length; byteIdx++) {
             if (differentMsbIdx == -1) {
                 final byte firstRangeLowerBound = ranges.get(0, byteIdx, Bound.LOWER);
@@ -42,6 +45,8 @@ public class Bytes {
                     continue;
                 }
             }
+
+            Debug.devAssert(differentMsbIdx != -1, "MSB index should have been set by now.");
 
             //At this point differentMsbIdx should contain the index of the point at which the ranges diverge.
             //We pick a range based on the value at this idx.
@@ -81,9 +86,8 @@ public class Bytes {
             Debug.devAssert(selectedRange != null, "Selected range should have been set by this point.");
             //There's a DIY assertion right above this.
             //noinspection ConstantConditions
-            final int lowerBound = 0xff & selectedRange.get(byteIdx, Bound.LOWER);
-            final int upperBound = 0xff & selectedRange.get(byteIdx, Bound.UPPER);
-
+            final int lowerBound =  0xff & (considerLowerBound ? selectedRange.get( byteIdx, Bound.LOWER) : 0);
+            final int upperBound =  0xff & (considerUpperBound ? selectedRange.get( byteIdx, Bound.UPPER) : -1);
             final int range = (upperBound - lowerBound) + 1;
 
             Debug.devAssert(Integer.signum(range) > 0, "Ranges must contain at least a single value");
@@ -94,8 +98,16 @@ public class Bytes {
             Debug.devAssert(valAtIdxInRange <= upperBound, "Should be lte upper bound");
 
             buf.put(byteIdx, (byte) valAtIdxInRange);
-        }
 
+            if (considerUpperBound && valAtIdxInRange < upperBound) {
+                considerUpperBound = false;
+            }
+
+            if (considerLowerBound && lowerBound < valAtIdxInRange) {
+                considerLowerBound = false;
+            }
+        }
+        Debug.devAssert(selectedRange != null, "Should have got a selected range at this point");
         //It is an assertion.
         //noinspection ConstantConditions
         Debug.devAssert(selectedRange.isIn(buf.array()), "Value should have been moved into this range");
