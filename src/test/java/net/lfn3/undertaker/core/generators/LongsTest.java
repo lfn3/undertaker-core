@@ -43,4 +43,12 @@ public class LongsTest {
             defaultGen.nextArray(min, max);
         }
     }
+
+    @Test
+    public void testFill() {
+        for (int i = 0; i < ITERATIONS; i++) {
+            final long[] arr = new long[64];
+            defaultGen.fill(arr);
+        }
+    }
 }

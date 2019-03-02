@@ -11,10 +11,13 @@ import org.openjdk.jmh.annotations.State;
 
 @State(Scope.Benchmark)
 public class LongsBench {
+    public static final int ARR_SIZE = 1024;
+
     public final Intervals intervals = new Intervals();
     public final ByteSource byteSource = new WrappedRandomByteSource();
     public final Booleans booleans = new Booleans(byteSource, intervals);
     public final Longs longs = new Longs(byteSource, intervals, booleans);
+    public final long[] arrayToFill = new long[ARR_SIZE];
 
     @Benchmark
     public long generateLong()
@@ -25,6 +28,12 @@ public class LongsBench {
     @Benchmark
     public long[] generateLongArray()
     {
-        return longs.nextArray(1024, 1024);
+        return longs.nextArray(ARR_SIZE, ARR_SIZE);
+    }
+
+    @Benchmark
+    public long[] fillLongArray() {
+        longs.fill(arrayToFill);
+        return arrayToFill;
     }
 }

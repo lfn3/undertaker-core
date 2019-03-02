@@ -122,4 +122,15 @@ public class Longs {
                 "Array length (" + ret.length + ") should be less than or equal to supplied max (" + maxLength + ")");
         return ret;
     }
+
+    /**
+     * You should only use this if the code you're testing is designed to avoid allocation.
+     * It will not shrink as well as the {@link #nextArray()} methods since it will not reduce the size of the array.
+     * @param toFill array to fill with random longs
+     */
+    public void fill(final long[] toFill) {
+        for (int i = 0; i < toFill.length; i++) {
+            toFill[i] = next();
+        }
+    }
 }
