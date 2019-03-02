@@ -30,4 +30,11 @@ public class IntegersTest {
             defaultGen.next(min, max);
         }
     }
+
+    @Test
+    public void generateIntArrays() {
+        for (int i = 0; i < ITERATIONS; i++) {
+            defaultGen.nextArray();
+        }
+    }
 }

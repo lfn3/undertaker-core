@@ -111,7 +111,7 @@ public class Integers {
 
         final Interval collInterval = intervals.next(IntervalType.COMPOSITE, EnumSet.of(IntervalFlag.SNIPPABLE_CHILDREN));
         int i = 0;
-        for (; minLength < i || (i < maxLength && shouldGenerateNext()); i++) {
+        for (; i < minLength || (i < maxLength && shouldGenerateNext()); i++) {
             tmp[i] = next();
         }
         final int[] ret = Arrays.copyOf(tmp, i);
