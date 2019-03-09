@@ -45,6 +45,6 @@ public class Bytes {
             }
         }
 
-        Debug.devAssert(selectedRange.isIn(buf.array()), "Value should have been moved into this range");
+        Debug.devAssert(() -> selectedRange.isIn(buf.array()), "Value should have been moved into this range");
     }
 }

@@ -11,9 +11,11 @@ public class Range {
         this.ranges = ranges;
         this.offset = offset;
 
+        Debug.devAssert(0 <= offset, "Offset (" + offset + ") should be gte 0");
+        Debug.devAssert(0 <= length, "Length (" + length + ") should be gte 0");
         Debug.devAssert(offset + length <= ranges.length, "Ranges array is not long enough.");
-        Debug.userAssert(isSorted(), "Lower bound of range should be less than the upper range.");
-        Debug.userAssert(doesNotCrossZero(), "A single range may not contain both negative and positive values. Please split it.");
+        Debug.userAssert(this::isSorted, "Lower bound of range should be less than the upper range.");
+        Debug.userAssert(this::doesNotCrossZero, "A single range may not contain both negative and positive values. Please split it.");
     }
 
     public Range(byte[] range) {
@@ -28,6 +30,7 @@ public class Range {
 
     public byte get(final int byteIndex, final Bound bound) {
         final int unboundIndex = offset + byteIndex;
+        Debug.devAssert(0 <= unboundIndex, "Unbounded index (" + unboundIndex + ") should be gte 0");
 
         if (bound == Bound.UPPER) {
             return ranges[unboundIndex + length];
@@ -36,7 +39,7 @@ public class Range {
         }
     }
 
-    public boolean isIn(byte[] value) {
+    boolean isIn(byte[] value) {
         if (value.length > length) {
             return false;
         }

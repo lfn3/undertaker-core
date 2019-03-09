@@ -22,10 +22,10 @@ public class Ranges {
         Debug.userAssert(length > 0, "Length must greater than zero");
         Debug.userAssert(ranges.length > 0, "Ranges must contain some values");
         Debug.userAssert(ranges.length % pairLength() == 0, "Expected ranges to contain 2x length bytes, or a multiple of that");
-        Debug.userAssert(areRangesSorted(), "Ranges should be in order from lowest to highest");
+        Debug.userAssert(this::areRangesSorted, "Ranges should be in order from lowest to highest");
     }
 
-    boolean areRangesSorted() {
+    private boolean areRangesSorted() {
         for (int rangeIdx = 1; rangeIdx < numberOfRanges; rangeIdx++) {
             boolean lastUpperIsLower = false;
             for (int byteIndex = 0; byteIndex < length; byteIndex++)

@@ -31,7 +31,7 @@ public class WrappedRandomByteSource implements ByteSource {
 
         Bytes.moveIntoAnyRange(buf, ranges);
 
-        devAssert(ranges.isIn(unmapped), "Move into any range should have pushed this value into a supplied range");
+        devAssert(() -> ranges.isIn(unmapped), "Move into any range should have pushed this value into a supplied range");
 
         return buf;
     }
