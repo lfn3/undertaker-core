@@ -16,7 +16,7 @@ public class LongsBench {
     public final Intervals intervals = new Intervals();
     public final ByteSource byteSource = new WrappedRandomByteSource();
     public final Booleans booleans = new Booleans(byteSource, intervals);
-    public final Longs longs = new Longs(byteSource, intervals, booleans);
+    public final Longs longs = new Longs(byteSource, intervals);
     public final long[] arrayToFill = new long[ARR_SIZE];
 
     @Benchmark

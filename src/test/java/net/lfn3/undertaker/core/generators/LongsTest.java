@@ -12,7 +12,7 @@ public class LongsTest {
     private final ByteSource randomSource = new WrappedRandomByteSource();
     private final Booleans booleans = new Booleans(randomSource, intervals);
     private final Integers integers = new Integers(randomSource, intervals, booleans);
-    private final Longs defaultGen = new Longs(randomSource, intervals, booleans);
+    private final Longs defaultGen = new Longs(randomSource, intervals);
 
     @Test
     public void generateLongs() {
