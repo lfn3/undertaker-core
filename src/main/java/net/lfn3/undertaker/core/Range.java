@@ -1,7 +1,7 @@
 package net.lfn3.undertaker.core;
 
 public class Range {
-    final int length;
+    public final int length;
 
     private final int offset;
     final byte[] ranges;
@@ -39,7 +39,7 @@ public class Range {
         }
     }
 
-    boolean isIn(byte[] value) {
+    public boolean isIn(byte[] value) {
         if (value.length > length) {
             return false;
         }
