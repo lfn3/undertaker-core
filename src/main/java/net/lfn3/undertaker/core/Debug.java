@@ -3,8 +3,8 @@ package net.lfn3.undertaker.core;
 import java.util.function.Supplier;
 
 public class Debug {
-    private final static boolean USER_DEBUG = false; //TODO: Read from... env var?
-    private final static boolean DEV_DEBUG = false; //TODO: Read from... env var?
+    private final static boolean USER_DEBUG = true; //TODO: Read from... env var?
+    private final static boolean DEV_DEBUG = true; //TODO: Read from... env var?
 
     public static void userAssert(Supplier<Boolean> condition, String message) {
         if (USER_DEBUG) {

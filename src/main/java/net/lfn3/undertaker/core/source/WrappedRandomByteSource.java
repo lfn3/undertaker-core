@@ -72,7 +72,6 @@ public class WrappedRandomByteSource implements ByteSource {
 
         Bytes.moveIntoRanges(pregenned, pointer, ranges, repeat);
 
-
         final List<ByteBuffer> ret = new ArrayList<>(repeat);
         for (int i = 0; i < repeat; i++) {
             ret.add(ByteBuffer.wrap(pregenned, i * ranges.length, ranges.length));

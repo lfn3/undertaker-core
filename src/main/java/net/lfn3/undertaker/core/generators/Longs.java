@@ -43,7 +43,7 @@ public class Longs {
             range[(Long.BYTES * 3) + 3] = BIAS;
             Arrays.fill(range, Long.BYTES * 3 + 4, Long.BYTES * 4 + 4, Byte.MAX_VALUE);
 
-            ARRAY_DEFAULT_RANGES = Ranges.fromFlatArray(range, Long.BYTES + 1);
+            ARRAY_DEFAULT_RANGES = Ranges.fromFlatArray(range, Long.BYTES + 1, new int[]{1});
         }
     }
 

@@ -4,12 +4,14 @@ public class Range {
     public final int length;
 
     private final int offset;
-    final byte[] ranges;
+    private final boolean[] fusedAt;
+    protected final byte[] ranges;
 
-    private Range(byte[] ranges, int offset, int length) {
+    private Range(byte[] ranges, int offset, int length, boolean[] fusedAt) {
         this.length = length;
         this.ranges = ranges;
         this.offset = offset;
+        this.fusedAt = fusedAt;
 
         Debug.devAssert(0 <= offset, "Offset (" + offset + ") should be gte 0");
         Debug.devAssert(0 <= length, "Length (" + length + ") should be gte 0");
@@ -19,13 +21,13 @@ public class Range {
     }
 
     public Range(byte[] range) {
-        this(range, 0, range.length / 2);
+        this(range, 0, range.length / 2, new boolean[range.length / 2]);
 
         Debug.userAssert(range.length % 2 == 0, "Range length must be a multiple of two, since there's an upper and lower bound.");
     }
 
-    static Range wrap(byte[] ranges, int offset, int length) {
-        return new Range(ranges, offset, length);
+    static Range wrap(byte[] ranges, int offset, int length, boolean[] fusedAt) {
+        return new Range(ranges, offset, length, fusedAt);
     }
 
     public byte get(final int byteIndex, final Bound bound) {
@@ -40,6 +42,7 @@ public class Range {
     }
 
     public boolean isIn(byte[] value) {
+        //TODO: again, fused ranges are giving me problems here.
         if (value.length > length) {
             return false;
         }

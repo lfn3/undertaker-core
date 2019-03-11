@@ -2,6 +2,8 @@ package net.lfn3.undertaker.core;
 
 import net.lfn3.undertaker.core.Range.Bound;
 
+import java.util.*;
+
 /**
  * Ranges are inclusive, and used to tell sources what a valid range of output is.
  */
@@ -13,36 +15,83 @@ public class Ranges {
     public final int numberOfRanges;
 
     private final byte[] ranges;
+    //Indicates where we've joined two ranges together.
+    //We should reset the "consider bound" vars at these points.
+    private final boolean[] fusedAt;
 
     private Ranges(final byte[] ranges, final int length) {
+        this(ranges, length, new int[0]);
+    }
+
+    private Ranges(final byte[] ranges, final int length, int[] fusedIndicies) {
         this.ranges = ranges;
         this.length = length;
         this.numberOfRanges = ranges.length / pairLength();
+        this.fusedAt = new boolean[length];
+        for (int fusedIdx : fusedIndicies) {
+            fusedAt[fusedIdx] = true;
+        }
 
         Debug.userAssert(length > 0, "Length must greater than zero");
         Debug.userAssert(ranges.length > 0, "Ranges must contain some values");
         Debug.userAssert(ranges.length % pairLength() == 0, "Expected ranges to contain 2x length bytes, or a multiple of that");
-        Debug.userAssert(this::areRangesSorted, "Ranges should be in order from lowest to highest");
+        //TODO: Reenable this assertion
+//        Debug.userAssert(this::areRangesSorted, "Ranges should be in order from lowest to highest");
+    }
+
+    //This is only really for assertions. Perf will probably tank if you actually use this.
+    private Collection<Ranges> unfuse() {
+        final List<Ranges> ret = new ArrayList<>();
+        int lastSplit = 0;
+        for (int i = 0; i < length; i++) {
+            if (fusedAt[i] || (i == length - 1 && lastSplit != 0)) {
+                final int length = (i - lastSplit);
+                final byte[] newRangeArr = new byte[length * numberOfRanges * 2];
+
+                for (int j = 0; j < numberOfRanges; j++) {
+                    final int lowerBoundSrcPos = lastSplit + (this.pairLength() * j);
+                    final int lowerBoundDestPos = length * 2 * j;
+                    System.arraycopy(this.ranges, lowerBoundSrcPos, newRangeArr, lowerBoundDestPos, length);
+
+                    final int upperBoundSrcPos = lastSplit + this.pairLength() * j + this.length;
+                    final int upperBoundDestPos =  length * 2 * j + length;
+                    System.arraycopy(this.ranges, upperBoundSrcPos, newRangeArr, upperBoundDestPos, length);
+                }
+                //TODO: this is giving me problems as the booleans I've strapped to the front of the long ranges are identical.
+                // meaning sorted assertion thinks they're unsorted. Need to dedupe them?
+                ret.add(new Ranges(newRangeArr, length));
+                lastSplit = i;
+            }
+        }
+
+        if (lastSplit == 0) {
+            return Collections.singletonList(this);
+        }
+
+        return ret;
     }
 
     private boolean areRangesSorted() {
-        for (int rangeIdx = 1; rangeIdx < numberOfRanges; rangeIdx++) {
-            boolean lastUpperIsLower = false;
-            for (int byteIndex = 0; byteIndex < length; byteIndex++)
-            {
-                final byte lastUpper = get(rangeIdx - 1, byteIndex, Bound.UPPER);
-                final byte currentLower = get(rangeIdx, byteIndex, Bound.LOWER);
+        for (Ranges ranges : unfuse())
+        {
+            for (int rangeIdx = 1; rangeIdx < ranges.numberOfRanges; rangeIdx++) {
+                boolean lastUpperIsLower = false;
+                for (int byteIndex = 0; byteIndex < ranges.length; byteIndex++)
+                {
+                    final byte lastUpper = get(rangeIdx - 1, byteIndex, Bound.UPPER);
+                    final byte currentLower = get(rangeIdx, byteIndex, Bound.LOWER);
 
-                if (lastUpper < currentLower) {
-                    lastUpperIsLower = true;
-                    break;
-                } else if (currentLower < lastUpper) {
+                    if (lastUpper < currentLower) {
+                        lastUpperIsLower = true;
+                        break;
+                    } else if (currentLower < lastUpper) {
+                        return false;
+                    }
+                }
+
+                if (!lastUpperIsLower) {
                     return false;
                 }
-            }
-
-            if (!lastUpperIsLower) {
-                return false;
             }
         }
         return true;
@@ -54,6 +103,10 @@ public class Ranges {
 
     public static Ranges fromFlatArray(final byte[] ranges, final int length) {
         return new Ranges(ranges, length);
+    }
+
+    public static Ranges fromFlatArray(final byte[] ranges, final int length, final int[] fusedAt) {
+        return new Ranges(ranges, length, fusedAt);
     }
 
     public static Ranges fromArrays(final byte[] lowerBound, final byte[] upperBound, final byte[]... moreRanges) {
@@ -100,7 +153,7 @@ public class Ranges {
 
         final int offset = rangeIndex * pairLength();
 
-        return Range.wrap(ranges, offset, length);
+        return Range.wrap(ranges, offset, length, fusedAt);
     }
 
     public boolean isIn(final byte[] value) {
@@ -117,5 +170,9 @@ public class Ranges {
         }
 
         return false;
+    }
+
+    public boolean[] getFusedAt() {
+        return fusedAt;
     }
 }

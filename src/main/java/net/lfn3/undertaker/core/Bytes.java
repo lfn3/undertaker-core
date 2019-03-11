@@ -57,21 +57,21 @@ public class Bytes {
     }
 
     public static void moveIntoRanges(final byte[] arr, final int offset, final Ranges ranges, final int repeat) {
-        Debug.userAssert(arr.length - offset == ranges.length * repeat,
-                "Buffer should be the same length as the range you're trying to move it into");
-
         boolean considerUpperBound = true;
         boolean considerLowerBound = true;
         Range range = null;
         int rangeIdx = 0;
 
         final int todo = ranges.length * repeat;
-        for (int byteIdx = offset; byteIdx < todo; byteIdx++) {
+        Debug.devAssert(todo <= arr.length - offset, "Not enough bytes available");
+        final boolean[] fusedAt = ranges.getFusedAt();
+        for (int byteIdx = 0; byteIdx < todo; byteIdx++) {
+            final int arrIdx = byteIdx + offset;
 
-            if (rangeIdx == 0) {
+            if (rangeIdx == 0 || fusedAt[byteIdx % fusedAt.length]) {
                 considerLowerBound = true;
                 considerUpperBound = true;
-                range = ranges.get(abs(arr[byteIdx] % ranges.numberOfRanges));
+                range = ranges.get(abs(arr[arrIdx] % ranges.numberOfRanges));
             }
 
             final int lowerBound =  0xff & (considerLowerBound ? range.get(rangeIdx, Bound.LOWER) : 0);
@@ -80,12 +80,12 @@ public class Bytes {
 
             Debug.devAssert(Integer.signum(rangeAtIdx) > 0, "Ranges must contain at least a single value");
 
-            final int valAtIdxInRange = ((0xff & arr[byteIdx]) % rangeAtIdx) + lowerBound;
+            final int valAtIdxInRange = ((0xff & arr[arrIdx]) % rangeAtIdx) + lowerBound;
 
             Debug.devAssert(lowerBound <= valAtIdxInRange, "Should be gte lower bound");
             Debug.devAssert(valAtIdxInRange <= upperBound, "Should be lte upper bound");
 
-            arr[byteIdx]  = (byte) valAtIdxInRange;
+            arr[arrIdx]  = (byte) valAtIdxInRange;
 
             if (considerUpperBound && valAtIdxInRange < upperBound) {
                 considerUpperBound = false;
@@ -99,7 +99,7 @@ public class Bytes {
         }
 
         for (int i = 0; i < repeat; i++) {
-            Debug.devAssert(() -> ranges.isIn(Arrays.copyOfRange(arr, offset + (ranges.length * repeat), ranges.length)),
+            Debug.devAssert(() -> ranges.isIn(Arrays.copyOfRange(arr, offset + ranges.length * repeat, offset + ranges.length * repeat + ranges.length)),
                     "Value should have been moved into this range");
         }
     }
