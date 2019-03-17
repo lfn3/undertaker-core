@@ -43,9 +43,16 @@ public class BytesBench {
         return BUFFERS;
     }
 
+    @Benchmark
+    public ByteBuffer moveIntoRangeSingleBenchmark() {
+        Bytes.moveIntoAnyRange(BUFFERS[0], RANGES[0]);
+        return BUFFERS[0];
+    }
+
     public static void main(String[] args) {
         final BytesBench bench = new BytesBench();
         bench.setup();
         bench.moveIntoRangeBenchmark();
+        bench.moveIntoRangeSingleBenchmark();
     }
 }
