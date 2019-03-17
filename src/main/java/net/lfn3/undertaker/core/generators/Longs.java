@@ -10,7 +10,6 @@ import net.lfn3.undertaker.core.source.ByteSource;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.LongBuffer;
-import java.util.Arrays;
 public class Longs {
     private static final Ranges DEFAULT_RANGES;
 
@@ -21,10 +20,11 @@ public class Longs {
     static {
         {
             final byte[] range = new byte[Long.BYTES * 4];
-            Arrays.fill(range, 0, Long.BYTES, Byte.MIN_VALUE);
-            Arrays.fill(range, Long.BYTES, Long.BYTES * 2, (byte) -1);
-            Arrays.fill(range, Long.BYTES * 2, Long.BYTES * 3, (byte) 0);
-            Arrays.fill(range, Long.BYTES * 3, Long.BYTES * 4, Byte.MAX_VALUE);
+            ByteBuffer wrapRange = ByteBuffer.wrap(range);
+            wrapRange.putLong(Long.MIN_VALUE);
+            wrapRange.putLong(-1);
+            wrapRange.putLong(0);
+            wrapRange.putLong(Long.MAX_VALUE);
 
             DEFAULT_RANGES = Ranges.fromFlatArray(range, Long.BYTES);
         }

@@ -20,10 +20,11 @@ public class Integers {
 
     static {
         final byte[] range = new byte[Integer.BYTES * 4];
-        Arrays.fill(range, 0, Integer.BYTES, Byte.MIN_VALUE);
-        Arrays.fill(range, Integer.BYTES, Integer.BYTES * 2, (byte) -1);
-        Arrays.fill(range, Integer.BYTES * 2, Integer.BYTES * 3, (byte) 0);
-        Arrays.fill(range, Integer.BYTES * 3, Integer.BYTES * 4, Byte.MAX_VALUE);
+        ByteBuffer wrapRange = ByteBuffer.wrap(range);
+        wrapRange.putInt(Integer.MIN_VALUE);
+        wrapRange.putInt(-1);
+        wrapRange.putInt(0);
+        wrapRange.putInt(Integer.MAX_VALUE);
 
         DEFAULT_RANGES = Ranges.fromFlatArray(range, Integer.BYTES);
     }
