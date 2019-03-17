@@ -53,4 +53,62 @@ public class Bytes {
         Debug.devAssert(() -> range.isIn(Arrays.copyOfRange(buf.array(), buf.arrayOffset(), buf.arrayOffset() + buf.remaining())),
                 "Value should have been moved into this range");
     }
+
+    public static void moveIntoRanges(final byte[] arr, final int offset, final Ranges ranges, final int repeat) {
+
+        boolean considerUpperBound = true;
+        boolean considerLowerBound = true;
+        Range range = null;
+        int rangeIdx = 0;
+
+        final int todo = ranges.length * repeat;
+        Debug.devAssert(todo <= arr.length - offset, "Not enough bytes available");
+        for (int byteIdx = offset; byteIdx < todo; byteIdx++) {
+
+            if (rangeIdx == 0) {
+                considerLowerBound = true;
+                considerUpperBound = true;
+                range = ranges.get(abs(arr[byteIdx] % ranges.numberOfRanges));
+            }
+
+            final int lowerBound =  0xff & (considerLowerBound ? range.get(rangeIdx, Bound.LOWER) : 0);
+            final int upperBound =  0xff & (considerUpperBound ? range.get(rangeIdx, Bound.UPPER) : -1);
+            final int rangeAtIdx = (upperBound - lowerBound) + 1;
+
+            Debug.devAssert(Integer.signum(rangeAtIdx) > 0, "Ranges must contain at least a single value");
+
+            final int valAtIdxInRange = ((0xff & arr[byteIdx]) % rangeAtIdx) + lowerBound;
+
+            Debug.devAssert(lowerBound <= valAtIdxInRange, "Should be gte lower bound");
+            Debug.devAssert(valAtIdxInRange <= upperBound, "Should be lte upper bound");
+
+            arr[byteIdx]  = (byte) valAtIdxInRange;
+
+            if (considerUpperBound && valAtIdxInRange < upperBound) {
+                considerUpperBound = false;
+            }
+
+            if (considerLowerBound && lowerBound < valAtIdxInRange) {
+                considerLowerBound = false;
+            }
+
+            rangeIdx = (rangeIdx + 1) % ranges.length;
+        }
+
+        Debug.devAssert(() -> {
+                    for (int i = 0; i < repeat; i++) {
+                        final byte[] slicedValue = Arrays.copyOfRange(
+                                arr,
+                                offset + (ranges.length * i),
+                                offset + (ranges.length * i) + ranges.length);
+
+                        if (!ranges.isIn(slicedValue)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                },
+                "Values should have been moved into this range");
+    }
 }

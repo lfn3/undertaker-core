@@ -1,6 +1,7 @@
 package net.lfn3.undertaker.core.source;
 
 import net.lfn3.undertaker.core.Bytes;
+import net.lfn3.undertaker.core.Range;
 import net.lfn3.undertaker.core.Ranges;
 
 import java.nio.ByteBuffer;
@@ -50,6 +51,53 @@ public class WrappedRandomByteSource implements ByteSource {
         pointer += ranges.length;
 
         return buf; //TODO: asReadOnlyBuffer?
+    }
+
+    @Override
+    public ByteBuffer nextBytes(Range range) {
+        ensurePregenned(range.length);
+
+        final ByteBuffer buf = ByteBuffer.wrap(pregenned, pointer, range.length).slice();
+
+        Bytes.moveIntoRange(buf, range);
+
+        devAssert(() -> range.isIn(Arrays.copyOfRange(pregenned, pointer, pointer + range.length)),
+                "Move into any range should have pushed this value into a supplied range");
+
+        pointer += range.length;
+
+        return buf; //TODO: asReadOnlyBuffer?
+    }
+
+    @Override
+    public ByteBuffer nextBytes(Ranges ranges, int repeat) {
+        final int length = ranges.length * repeat;
+        ensurePregenned(length);
+
+        Bytes.moveIntoRanges(pregenned, pointer, ranges, repeat);
+
+        final ByteBuffer ret = ByteBuffer.wrap(pregenned, pointer, length);
+
+        pointer += length;
+        return ret;
+    }
+
+    private void ensurePregenned(int length) {
+        final boolean enoughPregennedLeft = length <= remainingPregenned();
+        if (!enoughPregennedLeft) {
+            pregenned = new byte[Math.max(4 * length, 2 * pregenned.length)];
+            wrapped.nextBytes(pregenned);
+            pointer = 0;
+        }
+    }
+
+    private int remainingPregenned() {
+        return pregenned.length - pointer;
+    }
+
+    @Override
+    public void pregen(int bytesToPregen) {
+        ensurePregenned(bytesToPregen);
     }
 
     public void reset() {

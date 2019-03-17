@@ -1,5 +1,5 @@
 package net.lfn3.undertaker.core.intervals;
 
 public enum IntervalType {
-    COMPOSITE, VALUE
+    COMPOSITE, COLLECTION, COLLECTION_SIZE, SNIPPABLE, VALUE
 }

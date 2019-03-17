@@ -1,6 +1,7 @@
 package net.lfn3.undertaker.core;
 
 import net.lfn3.undertaker.core.generators.Booleans;
+import net.lfn3.undertaker.core.generators.Integers;
 import net.lfn3.undertaker.core.generators.Longs;
 import net.lfn3.undertaker.core.intervals.Intervals;
 import net.lfn3.undertaker.core.source.ByteSource;
@@ -16,7 +17,8 @@ public class LongsBench {
     public final Intervals intervals = new Intervals();
     public final ByteSource byteSource = new WrappedRandomByteSource();
     public final Booleans booleans = new Booleans(byteSource, intervals);
-    public final Longs longs = new Longs(byteSource, intervals, booleans);
+    public final Integers integers = new Integers(byteSource, intervals, booleans);
+    public final Longs longs = new Longs(byteSource, intervals, integers);
     public final long[] arrayToFill = new long[ARR_SIZE];
 
     @Benchmark

@@ -3,35 +3,37 @@ package net.lfn3.undertaker.core.generators;
 import net.lfn3.undertaker.core.Debug;
 import net.lfn3.undertaker.core.Ranges;
 import net.lfn3.undertaker.core.intervals.Interval;
-import net.lfn3.undertaker.core.intervals.IntervalFlag;
 import net.lfn3.undertaker.core.intervals.IntervalType;
 import net.lfn3.undertaker.core.intervals.Intervals;
 import net.lfn3.undertaker.core.source.ByteSource;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.LongBuffer;
 import java.util.Arrays;
-import java.util.EnumSet;
-
 public class Longs {
-    private final ByteSource byteSource;
-    private final Intervals intervals;
-    private final Booleans booleans;
     private static final Ranges DEFAULT_RANGES;
 
-    static {
-        final byte[] range = new byte[Long.BYTES * 4];
-        Arrays.fill(range, 0, Long.BYTES, Byte.MIN_VALUE);
-        Arrays.fill(range, Long.BYTES, Long.BYTES * 2, (byte) -1);
-        Arrays.fill(range, Long.BYTES * 2, Long.BYTES * 3, (byte) 0);
-        Arrays.fill(range, Long.BYTES * 3, Long.BYTES * 4, Byte.MAX_VALUE);
+    private final ByteSource byteSource;
+    private final Intervals intervals;
+    private final Collections collections;
 
-        DEFAULT_RANGES = Ranges.fromFlatArray(range, Long.BYTES);
+    static {
+        {
+            final byte[] range = new byte[Long.BYTES * 4];
+            Arrays.fill(range, 0, Long.BYTES, Byte.MIN_VALUE);
+            Arrays.fill(range, Long.BYTES, Long.BYTES * 2, (byte) -1);
+            Arrays.fill(range, Long.BYTES * 2, Long.BYTES * 3, (byte) 0);
+            Arrays.fill(range, Long.BYTES * 3, Long.BYTES * 4, Byte.MAX_VALUE);
+
+            DEFAULT_RANGES = Ranges.fromFlatArray(range, Long.BYTES);
+        }
     }
 
-    public Longs(ByteSource byteSource, Intervals intervals, Booleans booleans) {
+    public Longs(ByteSource byteSource, Intervals intervals, Integers integers) {
         this.byteSource = byteSource;
         this.intervals = intervals;
-        this.booleans = booleans;
+        this.collections = new Collections(byteSource, intervals, integers);
     }
 
     public long next() {
@@ -88,11 +90,6 @@ public class Longs {
         return ret;
     }
 
-    private boolean shouldGenerateNext()
-    {
-        return booleans.nextBoolean(5);
-    }
-
     public final static int DEFAULT_MAX_LENGTH = 2048;
 
     public long[] nextArray() {
@@ -104,23 +101,19 @@ public class Longs {
     }
 
     public long[] nextArray(final int minLength, final int maxLength) {
-        Debug.userAssert(minLength <= maxLength,
-                "minLength (" + minLength + ") should be less than or equal to maxLength (" + maxLength + ")");
+        final Interval collInterval = intervals.next(IntervalType.COLLECTION);
+        final int size = collections.getSize(minLength, maxLength);
+        byteSource.pregen(DEFAULT_RANGES.length * size);
 
-        final long[] tmp = new long[maxLength];
+        final LongBuffer longBuffer = byteSource.nextBytes(DEFAULT_RANGES, size)
+                .order(ByteOrder.BIG_ENDIAN)
+                .asLongBuffer();
+        final long[] out = new long[size];
+        longBuffer.get(out);
 
-        final Interval collInterval = intervals.next(IntervalType.COMPOSITE, EnumSet.of(IntervalFlag.SNIPPABLE_CHILDREN));
-        int i = 0;
-        for (; i < minLength || (i < maxLength && shouldGenerateNext()); i++) {
-            tmp[i] = next();
-        }
-        final long[] ret = Arrays.copyOf(tmp, i);
-        intervals.done(collInterval, ret);
-        Debug.devAssert(ret.length <= maxLength,
-                "Array length (" + ret.length + ") should be less than or equal to supplied max (" + maxLength + ")");
-        Debug.devAssert(ret.length >= minLength,
-                "Array length (" + ret.length + ") should be less than or equal to supplied max (" + maxLength + ")");
-        return ret;
+        intervals.done(collInterval, out);
+
+        return out;
     }
 
     /**

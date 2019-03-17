@@ -15,4 +15,13 @@ public interface ByteSource {
     default ByteBuffer nextBytes(Range range) {
         return nextBytes(Ranges.fromRange(range));
     }
+    ByteBuffer nextBytes(Ranges ranges, int repeat);
+
+    /**
+     *
+     * @param bytesToPregen number of bytes you expect to need
+     */
+    default void pregen(int bytesToPregen) {
+
+    }
 }
