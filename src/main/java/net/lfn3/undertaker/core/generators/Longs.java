@@ -103,17 +103,21 @@ public class Longs {
     public long[] nextArray(final int minLength, final int maxLength) {
         final Interval collInterval = intervals.next(IntervalType.COLLECTION);
         final int size = collections.getSize(minLength, maxLength);
-        byteSource.pregen(DEFAULT_RANGES.length * size);
-
-        final LongBuffer longBuffer = byteSource.nextBytes(DEFAULT_RANGES, size)
-                .order(ByteOrder.BIG_ENDIAN)
-                .asLongBuffer();
         final long[] out = new long[size];
-        longBuffer.get(out);
+
+        fillArray(out);
 
         intervals.done(collInterval, out);
 
         return out;
+    }
+
+    private void fillArray(final long[] toFill) {
+        byteSource.pregen(toFill.length * Long.BYTES);
+        final LongBuffer longBuffer = byteSource.nextBytes(DEFAULT_RANGES, toFill.length)
+                .order(ByteOrder.BIG_ENDIAN)
+                .asLongBuffer();
+        longBuffer.get(toFill);
     }
 
     /**
@@ -122,8 +126,8 @@ public class Longs {
      * @param toFill array to fill with random longs
      */
     public void fill(final long[] toFill) {
-        for (int i = 0; i < toFill.length; i++) {
-            toFill[i] = next();
-        }
+        final Interval collInterval = intervals.next(IntervalType.COLLECTION);
+        fillArray(toFill);
+        intervals.done(collInterval, toFill);
     }
 }
