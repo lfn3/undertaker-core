@@ -43,7 +43,7 @@ public class WrappedRandomByteSource implements ByteSource {
 
         final ByteBuffer buf = ByteBuffer.wrap(pregenned, pointer, ranges.length).slice();
 
-        Bytes.moveIntoAnyRange(buf, ranges);
+        Bytes.moveIntoRange(buf, ranges);
 
         devAssert(() -> ranges.isIn(Arrays.copyOfRange(pregenned, pointer, pointer + ranges.length)),
                 "Move into any range should have pushed this value into a supplied range");
@@ -74,9 +74,9 @@ public class WrappedRandomByteSource implements ByteSource {
         final int length = ranges.length * repeat;
         ensurePregenned(length);
 
-        Bytes.moveIntoRanges(pregenned, pointer, ranges, repeat);
+        final ByteBuffer ret = ByteBuffer.wrap(pregenned, pointer, length).slice();
 
-        final ByteBuffer ret = ByteBuffer.wrap(pregenned, pointer, length);
+        Bytes.moveIntoRange(ret, ranges);
 
         pointer += length;
         return ret;

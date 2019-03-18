@@ -37,7 +37,7 @@ public class BytesBench {
     @Benchmark
     public ByteBuffer[] moveIntoRangeBenchmark() {
         for (int i = 0; i < SIZE; i++) {
-            Bytes.moveIntoAnyRange(BUFFERS[i], RANGES[i]);
+            Bytes.moveIntoRange(BUFFERS[i], RANGES[i]);
         }
 
         return BUFFERS;
@@ -45,7 +45,7 @@ public class BytesBench {
 
     @Benchmark
     public ByteBuffer moveIntoRangeSingleBenchmark() {
-        Bytes.moveIntoAnyRange(BUFFERS[0], RANGES[0]);
+        Bytes.moveIntoRange(BUFFERS[0], RANGES[0]);
         return BUFFERS[0];
     }
 

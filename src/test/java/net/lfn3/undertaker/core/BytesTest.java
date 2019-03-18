@@ -26,7 +26,7 @@ public class BytesTest {
                 3, 4, 5
         };
 
-        Bytes.moveIntoAnyRange(b, Ranges.fromFlatArray(ranges, 3));
+        Bytes.moveIntoRange(b, Ranges.fromFlatArray(ranges, 3));
 
         Assert.assertArrayEquals(input, b.array());
     }
