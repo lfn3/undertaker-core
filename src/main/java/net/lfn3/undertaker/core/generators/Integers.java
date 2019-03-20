@@ -1,7 +1,8 @@
 package net.lfn3.undertaker.core.generators;
 
-import net.lfn3.undertaker.core.Debug;
+import net.lfn3.undertaker.core.DevDebug;
 import net.lfn3.undertaker.core.Ranges;
+import net.lfn3.undertaker.core.UserDebug;
 import net.lfn3.undertaker.core.intervals.Interval;
 import net.lfn3.undertaker.core.intervals.IntervalFlag;
 import net.lfn3.undertaker.core.intervals.IntervalType;
@@ -72,9 +73,9 @@ public class Integers {
 
         final int retVal = next(ranges);
 
-        Debug.devAssert(min <= retVal, "Expected generated value (" + retVal + ")" +
+        DevDebug.devAssert(min <= retVal, "Expected generated value (" + retVal + ")" +
                 " to be greater than or equal to supplied min (" + min + ")");
-        Debug.devAssert(retVal <= max, "Expected generated value (" + retVal + ")" +
+        DevDebug.devAssert(retVal <= max, "Expected generated value (" + retVal + ")" +
                 " to be less than or equal to supplied max (" + max + ")");
 
         return retVal;
@@ -105,7 +106,7 @@ public class Integers {
     }
 
     public int[] nextArray(final int minLength, final int maxLength) {
-        Debug.userAssert(minLength <= maxLength,
+        UserDebug.userAssert(minLength <= maxLength,
                 "minLength (" + minLength + ") should be less than or equal to maxLength (" + maxLength + ")");
 
         final int[] tmp = new int[maxLength];
@@ -117,9 +118,9 @@ public class Integers {
         }
         final int[] ret = Arrays.copyOf(tmp, i);
         intervals.done(collInterval, ret);
-        Debug.devAssert(ret.length <= maxLength,
+        DevDebug.devAssert(ret.length <= maxLength,
                 "Array length (" + ret.length + ") should be less than or equal to supplied max (" + maxLength + ")");
-        Debug.devAssert(ret.length >= minLength,
+        DevDebug.devAssert(ret.length >= minLength,
                 "Array length (" + ret.length + ") should be less than or equal to supplied max (" + maxLength + ")");
         return ret;
     }

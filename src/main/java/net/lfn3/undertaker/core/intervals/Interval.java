@@ -1,6 +1,6 @@
 package net.lfn3.undertaker.core.intervals;
 
-import net.lfn3.undertaker.core.Debug;
+import net.lfn3.undertaker.core.DevDebug;
 
 import java.util.EnumSet;
 
@@ -15,7 +15,7 @@ public class Interval {
     void populate(final IntervalType type, final EnumSet<IntervalFlag> flags) {
         assertNotNone();
         assertUnpopulated();
-        Debug.devAssert(flags != null, "Flags may not be null.");
+        DevDebug.devAssert(flags != null, "Flags may not be null.");
 
         this.type = type;
         this.flags = flags;
@@ -37,21 +37,21 @@ public class Interval {
 
     //region assertions
     private void assertUnpopulated() {
-        Debug.devAssert(this.type == null, "Interval was not reset before attempting reuse.");
-        Debug.devAssert(this.generatedValue == null, "Interval was not reset before attempting reuse.");
-        Debug.devAssert(this.flags == null, "Interval was not reset before attempting reuse.");
+        DevDebug.devAssert(this.type == null, "Interval was not reset before attempting reuse.");
+        DevDebug.devAssert(this.generatedValue == null, "Interval was not reset before attempting reuse.");
+        DevDebug.devAssert(this.flags == null, "Interval was not reset before attempting reuse.");
     }
 
     private void assertNotNone()
     {
-        Debug.devAssert(this != NONE, "You're trying to actually use the NONE interval");
+        DevDebug.devAssert(this != NONE, "You're trying to actually use the NONE interval");
     }
 
     private void assertPopulated()
     {
         assertNotNone();
-        Debug.devAssert(this.type != null, "Interval hasn't been populated yet");
-        Debug.devAssert(this.flags != null, "Interval hasn't been populated yet");
+        DevDebug.devAssert(this.type != null, "Interval hasn't been populated yet");
+        DevDebug.devAssert(this.flags != null, "Interval hasn't been populated yet");
     }
     // endregion assertions
 

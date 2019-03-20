@@ -1,6 +1,6 @@
 package net.lfn3.undertaker.core.generators;
 
-import net.lfn3.undertaker.core.Debug;
+import net.lfn3.undertaker.core.DevDebug;
 import net.lfn3.undertaker.core.Ranges;
 import net.lfn3.undertaker.core.intervals.Interval;
 import net.lfn3.undertaker.core.intervals.IntervalType;
@@ -73,9 +73,9 @@ public class Longs {
 
         final long retVal = next(ranges);
 
-        Debug.devAssert(min <= retVal, "Expected generated value (" + retVal + ")" +
+        DevDebug.devAssert(min <= retVal, "Expected generated value (" + retVal + ")" +
                 " to be greater than or equal to supplied min (" + min + ")");
-        Debug.devAssert(retVal <= max, "Expected generated value (" + retVal + ")" +
+        DevDebug.devAssert(retVal <= max, "Expected generated value (" + retVal + ")" +
                 " to be less than or equal to supplied max (" + max + ")");
 
         return retVal;

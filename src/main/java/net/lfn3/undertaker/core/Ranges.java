@@ -19,10 +19,10 @@ public class Ranges {
         this.length = length;
         this.numberOfRanges = ranges.length / pairLength();
 
-        Debug.userAssert(length > 0, "Length must greater than zero");
-        Debug.userAssert(ranges.length > 0, "Ranges must contain some values");
-        Debug.userAssert(ranges.length % pairLength() == 0, "Expected ranges to contain 2x length bytes, or a multiple of that");
-        Debug.userAssert(this::areRangesSorted, "Ranges should be in order from lowest to highest");
+        UserDebug.userAssert(length > 0, "Length must greater than zero");
+        UserDebug.userAssert(ranges.length > 0, "Ranges must contain some values");
+        UserDebug.userAssert(ranges.length % pairLength() == 0, "Expected ranges to contain 2x length bytes, or a multiple of that");
+        UserDebug.userAssert(this::areRangesSorted, "Ranges should be in order from lowest to highest");
     }
 
     private boolean areRangesSorted() {
@@ -57,7 +57,7 @@ public class Ranges {
     }
 
     public static Ranges fromArrays(final byte[] lowerBound, final byte[] upperBound, final byte[]... moreRanges) {
-        Debug.userAssert(lowerBound.length == upperBound.length, "All inputs must be of same length");
+        UserDebug.userAssert(lowerBound.length == upperBound.length, "All inputs must be of same length");
         final byte[] flattened = new byte[lowerBound.length + upperBound.length + (moreRanges.length * lowerBound.length)];
         int pos = 0;
         System.arraycopy(lowerBound, 0, flattened, pos, lowerBound.length);
@@ -65,7 +65,7 @@ public class Ranges {
         System.arraycopy(upperBound, 0, flattened, pos, upperBound.length);
         pos += upperBound.length;
         for (byte[] arr : moreRanges) {
-            Debug.userAssert(arr.length == lowerBound.length, "All inputs must be of same length");
+            UserDebug.userAssert(arr.length == lowerBound.length, "All inputs must be of same length");
             System.arraycopy(arr, 0, flattened, pos, arr.length);
             pos += arr.length;
         }
@@ -77,10 +77,10 @@ public class Ranges {
     }
 
     public byte get(final int rangeIndex, final int byteIndex, Bound bound) {
-        Debug.userAssert(
+        UserDebug.userAssert(
                 rangeIndex < numberOfRanges,
                 "Range index (" + rangeIndex + ") must be less than the number of ranges (" + numberOfRanges + ").");
-        Debug.userAssert(
+        UserDebug.userAssert(
                 byteIndex < length,
                 "Byte index (" + byteIndex + ") must be less than the length of the ranges (" + length + ").");
 
@@ -94,7 +94,7 @@ public class Ranges {
     }
 
     public Range get(final int rangeIndex) {
-        Debug.userAssert(
+        UserDebug.userAssert(
                 rangeIndex < numberOfRanges,
                 "Range index (" + rangeIndex + ") must be less than the number of ranges (" + numberOfRanges + ").");
 

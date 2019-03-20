@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Random;
 
-import static net.lfn3.undertaker.core.Debug.devAssert;
+import static net.lfn3.undertaker.core.DevDebug.devAssert;
 
 public class WrappedRandomByteSource implements ByteSource {
     private static final int DEFAULT_PREGEN_SIZE = 8 * 1024;

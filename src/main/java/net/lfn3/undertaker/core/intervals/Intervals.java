@@ -1,6 +1,7 @@
 package net.lfn3.undertaker.core.intervals;
 
-import net.lfn3.undertaker.core.Debug;
+import net.lfn3.undertaker.core.DevDebug;
+import net.lfn3.undertaker.core.UserDebug;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,7 +45,7 @@ public class Intervals {
 
     public Interval next(final IntervalType type, final EnumSet<IntervalFlag> flags) {
         for (Interval parent : intervalStack) {
-            Debug.userAssert(parent.getType() == IntervalType.COMPOSITE,
+            UserDebug.userAssert(parent.getType() == IntervalType.COMPOSITE,
                     "You tried to add a child interval under a value interval: " + parent);
             if (parent.hasFlag(IntervalFlag.SNIPPABLE_CHILDREN))
             {
@@ -101,7 +102,7 @@ public class Intervals {
         //TODO: can we validate if a composite interval had no children?
         Interval popped = intervalStack.pop();
 
-        Debug.userAssert(popped == interval,
+        UserDebug.userAssert(popped == interval,
                 "Interval popped off in the wrong order, we expected to be done with " + popped + " next.");
 
         if (saveInterval(interval.flags))
@@ -114,7 +115,7 @@ public class Intervals {
     }
 
     public Collection<Object> getGeneratedValues() {
-        Debug.devAssert(mode != IntervalsMode.FAST,
+        DevDebug.devAssert(mode != IntervalsMode.FAST,
                 "No point in trying to get the generated values back out if nothing has been saved");
 
         return saved.stream().map(Interval::getGeneratedValue).collect(Collectors.toList());

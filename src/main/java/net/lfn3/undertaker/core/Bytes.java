@@ -15,7 +15,7 @@ public class Bytes {
      * @param ranges ranges to move the value into
      */
     public static void moveIntoRange(final ByteBuffer buf, final Ranges ranges) {
-        Debug.userAssert(buf.remaining() % ranges.length == 0,
+        UserDebug.userAssert(buf.remaining() % ranges.length == 0,
                 "Buffer remaining should be a multiple of the length of the range you're trying to move it into");
 
         boolean considerUpperBound = true;
@@ -35,12 +35,12 @@ public class Bytes {
             final int upperBound =  0xff & (considerUpperBound ? range.get(rangeIdx, Bound.UPPER) : -1);
             final int rangeAtIdx = (upperBound - lowerBound) + 1;
 
-            Debug.devAssert(Integer.signum(rangeAtIdx) > 0, "Ranges must contain at least a single value");
+            DevDebug.devAssert(Integer.signum(rangeAtIdx) > 0, "Ranges must contain at least a single value");
 
             final int valAtIdxInRange = ((0xff & valAtIdx) % rangeAtIdx) + lowerBound;
 
-            Debug.devAssert(lowerBound <= valAtIdxInRange, "Should be gte lower bound");
-            Debug.devAssert(valAtIdxInRange <= upperBound, "Should be lte upper bound");
+            DevDebug.devAssert(lowerBound <= valAtIdxInRange, "Should be gte lower bound");
+            DevDebug.devAssert(valAtIdxInRange <= upperBound, "Should be lte upper bound");
 
             buf.put(byteIdx, (byte)valAtIdxInRange);
 
@@ -55,7 +55,7 @@ public class Bytes {
 
         buf.rewind();
 
-        Debug.devAssert(() -> {
+        DevDebug.devAssert(() -> {
                     final byte[] slicedValue = new byte[ranges.length];
                     while (buf.hasRemaining()) {
                         buf.get(slicedValue);
@@ -71,7 +71,7 @@ public class Bytes {
     }
 
     public static void moveIntoRange(final ByteBuffer buf, final Range range) {
-        Debug.userAssert(buf.remaining() % range.length == 0,
+        UserDebug.userAssert(buf.remaining() % range.length == 0,
                 "Buffer remaining should be a multiple of the length of the range you're trying to move it into");
 
         boolean considerUpperBound = true;
@@ -89,12 +89,12 @@ public class Bytes {
             final int upperBound =  0xff & (considerUpperBound ? range.get(rangeIdx, Bound.UPPER) : -1);
             final int rangeAtIdx = (upperBound - lowerBound) + 1;
 
-            Debug.devAssert(Integer.signum(rangeAtIdx) > 0, "Ranges must contain at least a single value");
+            DevDebug.devAssert(Integer.signum(rangeAtIdx) > 0, "Ranges must contain at least a single value");
 
             final int valAtIdxInRange = ((0xff & valAtIdx) % rangeAtIdx) + lowerBound;
 
-            Debug.devAssert(lowerBound <= valAtIdxInRange, "Should be gte lower bound");
-            Debug.devAssert(valAtIdxInRange <= upperBound, "Should be lte upper bound");
+            DevDebug.devAssert(lowerBound <= valAtIdxInRange, "Should be gte lower bound");
+            DevDebug.devAssert(valAtIdxInRange <= upperBound, "Should be lte upper bound");
 
             buf.put(byteIdx, (byte)valAtIdxInRange);
 
@@ -109,7 +109,7 @@ public class Bytes {
 
         buf.rewind();
 
-        Debug.devAssert(() -> {
+        DevDebug.devAssert(() -> {
                     final byte[] slicedValue = new byte[range.length];
                     while (buf.hasRemaining()) {
                         buf.get(slicedValue);

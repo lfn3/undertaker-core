@@ -11,17 +11,17 @@ public class Range {
         this.ranges = ranges;
         this.offset = offset;
 
-        Debug.devAssert(0 <= offset, "Offset (" + offset + ") should be gte 0");
-        Debug.devAssert(0 <= length, "Length (" + length + ") should be gte 0");
-        Debug.devAssert(offset + length <= ranges.length, "Ranges array is not long enough.");
-        Debug.userAssert(this::isSorted, "Lower bound of range should be less than the upper range.");
-        Debug.userAssert(this::doesNotCrossZero, "A single range may not contain both negative and positive values. Please split it.");
+        DevDebug.devAssert(0 <= offset, "Offset (" + offset + ") should be gte 0");
+        DevDebug.devAssert(0 <= length, "Length (" + length + ") should be gte 0");
+        DevDebug.devAssert(offset + length <= ranges.length, "Ranges array is not long enough.");
+        UserDebug.userAssert(this::isSorted, "Lower bound of range should be less than the upper range.");
+        UserDebug.userAssert(this::doesNotCrossZero, "A single range may not contain both negative and positive values. Please split it.");
     }
 
     public Range(byte[] range) {
         this(range, 0, range.length / 2);
 
-        Debug.userAssert(range.length % 2 == 0, "Range length must be a multiple of two, since there's an upper and lower bound.");
+        UserDebug.userAssert(range.length % 2 == 0, "Range length must be a multiple of two, since there's an upper and lower bound.");
     }
 
     static Range wrap(byte[] ranges, int offset, int length) {
@@ -30,7 +30,7 @@ public class Range {
 
     public byte get(final int byteIndex, final Bound bound) {
         final int unboundIndex = offset + byteIndex;
-        Debug.devAssert(0 <= unboundIndex, "Unbounded index (" + unboundIndex + ") should be gte 0");
+        DevDebug.devAssert(0 <= unboundIndex, "Unbounded index (" + unboundIndex + ") should be gte 0");
 
         if (bound == Bound.UPPER) {
             return ranges[unboundIndex + length];
