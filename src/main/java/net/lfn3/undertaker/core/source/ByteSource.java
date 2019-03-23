@@ -24,4 +24,15 @@ public interface ByteSource {
     default void pregen(int bytesToPregen) {
 
     }
+
+    /**
+     * A ByteSource should supply the same sequence of bytes again if reset.
+     */
+    void reset();
+
+
+    /**
+     * A ByteSource should supply a different sequence of bytes after a call to next.
+     */
+    void next();
 }
