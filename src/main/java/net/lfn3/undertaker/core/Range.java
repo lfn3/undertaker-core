@@ -1,5 +1,7 @@
 package net.lfn3.undertaker.core;
 
+import java.nio.ByteBuffer;
+
 public class Range {
     public final int length;
 
@@ -26,6 +28,14 @@ public class Range {
 
     static Range wrap(byte[] ranges, int offset, int length) {
         return new Range(ranges, offset, length);
+    }
+
+    public ByteBuffer get(final Bound bound) {
+        if (bound == Bound.UPPER) {
+            return ByteBuffer.wrap(ranges, offset + length, length).slice();
+        } else {
+            return ByteBuffer.wrap(ranges, offset, length).slice();
+        }
     }
 
     public byte get(final int byteIndex, final Bound bound) {
