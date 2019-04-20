@@ -16,7 +16,7 @@ public class BytesTest {
     }
 
     @Test
-    public void moveIntoARangeShouldDoNothingIfAlreadyInARange() {
+    public void moveIntoRangeShouldDoNothingIfAlreadyInARange() {
         final byte[] input = {1, 2, 3};
 
         ByteBuffer b = ByteBuffer.wrap(input);
@@ -30,4 +30,53 @@ public class BytesTest {
 
         Assert.assertArrayEquals(input, b.array());
     }
+
+    @Test
+    public void moveIntoNearestRangeShouldDoNothingIfAlreadyInARange() {
+        final byte[] input = {1, 2, 3};
+
+        ByteBuffer b = ByteBuffer.wrap(input);
+
+        final byte[] ranges = {
+                0, 1, 2,
+                3, 4, 5
+        };
+
+        Bytes.moveIntoNearestRange(b, Ranges.fromFlatArray(ranges, 3));
+
+        Assert.assertArrayEquals(input, b.array());
+    }
+
+    @Test
+    public void moveIntoRangeRepeat() {
+        final byte[] input = {1, 2, 3};
+
+        ByteBuffer b = ByteBuffer.wrap(input);
+
+        final byte[] ranges = {
+                0,
+                1,
+        };
+
+        Bytes.moveIntoRange(b, Ranges.fromFlatArray(ranges, 1));
+
+        Assert.assertArrayEquals(new byte[]{1, 0, 1}, b.array());
+    }
+
+    @Test
+    public void moveIntoNearestRangeRepeat() {
+        final byte[] input = {1, 2, 3};
+
+        ByteBuffer b = ByteBuffer.wrap(input);
+
+        final byte[] ranges = {
+                0,
+                1,
+        };
+
+        Bytes.moveIntoNearestRange(b, Ranges.fromFlatArray(ranges, 1));
+
+        Assert.assertArrayEquals(new byte[]{1, 0, 1}, b.array());
+    }
+
 }

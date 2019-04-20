@@ -6,7 +6,9 @@ import net.lfn3.undertaker.core.Ranges;
 import java.nio.ByteBuffer;
 
 public interface ByteSource {
-    ByteBuffer nextBytes(Ranges ranges);
+    default ByteBuffer nextBytes(Ranges ranges) {
+        return nextBytes(ranges, 1);
+    }
 
     /**
      * @param range Range describing the length and breadth of values we can generate
