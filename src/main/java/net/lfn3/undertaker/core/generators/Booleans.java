@@ -3,11 +3,12 @@ package net.lfn3.undertaker.core.generators;
 import net.lfn3.undertaker.core.Range;
 import net.lfn3.undertaker.core.UserDebug;
 import net.lfn3.undertaker.core.intervals.Interval;
-import net.lfn3.undertaker.core.intervals.IntervalType;
+import net.lfn3.undertaker.core.intervals.IntervalFlag;
 import net.lfn3.undertaker.core.intervals.Intervals;
 import net.lfn3.undertaker.core.source.ByteSource;
 
 import java.nio.ByteBuffer;
+import java.util.EnumSet;
 
 public class Booleans {
     private final ByteSource byteSource;
@@ -35,7 +36,7 @@ public class Booleans {
     }
 
     private boolean nextBoolean(final Range range) {
-        final Interval interval = intervals.next(IntervalType.VALUE);
+        final Interval interval = intervals.next(EnumSet.of(IntervalFlag.VALUE));
         final ByteBuffer buf = byteSource.nextBytes(range);
         final boolean ret = buf.get(0) >= 1;
         intervals.done(interval, ret);

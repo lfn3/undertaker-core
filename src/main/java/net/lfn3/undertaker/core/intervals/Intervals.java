@@ -39,14 +39,12 @@ public class Intervals {
         saved.clear();
     }
 
-    public Interval next(final IntervalType type) {
-        return next(type, NONE);
+    public Interval next() {
+        return next(NONE);
     }
 
-    public Interval next(final IntervalType type, final EnumSet<IntervalFlag> flags) {
+    public Interval next(final EnumSet<IntervalFlag> flags) {
         for (Interval parent : intervalStack) {
-            UserDebug.userAssert(parent.getType() == IntervalType.COMPOSITE,
-                    "You tried to add a child interval under a value interval: " + parent);
             if (parent.hasFlag(IntervalFlag.SNIPPABLE_CHILDREN))
             {
                 flags.add(IntervalFlag.SNIPPABLE);
@@ -67,7 +65,7 @@ public class Intervals {
             interval = new Interval();
         }
 
-        interval.populate(type, flags);
+        interval.populate(flags);
 
         intervalStack.push(interval);
 

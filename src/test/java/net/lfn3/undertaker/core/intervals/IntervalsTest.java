@@ -11,19 +11,19 @@ public class IntervalsTest {
 
     @Test
     public void reusesIntervals() {
-        final Interval interval = intervals.next(IntervalType.COMPOSITE);
+        final Interval interval = intervals.next(EnumSet.of(IntervalFlag.COMPOSITE));
 
         intervals.done(interval, null); //Hands back interval
 
-        assertSame(interval, intervals.next(IntervalType.VALUE));
+        assertSame(interval, intervals.next(EnumSet.of(IntervalFlag.VALUE)));
     }
 
     @Test
     public void retainsSnippableIntervalsWhenShrinking() {
         intervals.setMode(IntervalsMode.SHRINK);
 
-        final Interval one = intervals.next(IntervalType.COMPOSITE, EnumSet.of(IntervalFlag.SNIPPABLE_CHILDREN));
-        final Interval child = intervals.next(IntervalType.COMPOSITE);
+        final Interval one = intervals.next(EnumSet.of(IntervalFlag.COMPOSITE, IntervalFlag.SNIPPABLE_CHILDREN));
+        final Interval child = intervals.next(EnumSet.of(IntervalFlag.COMPOSITE));
 
         intervals.done(child, null);
         intervals.done(one, null);
@@ -36,13 +36,13 @@ public class IntervalsTest {
     public void getTopLevelGeneratedValuesWhenDisplaying() {
         intervals.setMode(IntervalsMode.DISPLAY);
 
-        final Interval parentOne = intervals.next(IntervalType.COMPOSITE);
-        final Interval childOne = intervals.next(IntervalType.VALUE);
+        final Interval parentOne = intervals.next(EnumSet.of(IntervalFlag.COMPOSITE));
+        final Interval childOne = intervals.next(EnumSet.of(IntervalFlag.VALUE));
 
         intervals.done(childOne, null);
         intervals.done(parentOne, "parentOne");
 
-        final Interval parentTwo = intervals.next(IntervalType.VALUE);
+        final Interval parentTwo = intervals.next(EnumSet.of(IntervalFlag.VALUE));
 
         intervals.done(parentTwo, "parentTwo");
 

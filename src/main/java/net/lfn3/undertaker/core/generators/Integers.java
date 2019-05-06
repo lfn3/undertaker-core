@@ -5,7 +5,6 @@ import net.lfn3.undertaker.core.Ranges;
 import net.lfn3.undertaker.core.UserDebug;
 import net.lfn3.undertaker.core.intervals.Interval;
 import net.lfn3.undertaker.core.intervals.IntervalFlag;
-import net.lfn3.undertaker.core.intervals.IntervalType;
 import net.lfn3.undertaker.core.intervals.Intervals;
 import net.lfn3.undertaker.core.source.ByteSource;
 
@@ -82,7 +81,7 @@ public class Integers {
     }
 
     public int next(Ranges ranges) {
-        final Interval interval = intervals.next(IntervalType.VALUE);
+        final Interval interval = intervals.next(EnumSet.of(IntervalFlag.VALUE));
         final ByteBuffer buf = byteSource.nextBytes(ranges);
         final int ret = buf.getInt(0);
 
@@ -111,7 +110,7 @@ public class Integers {
 
         final int[] tmp = new int[maxLength];
 
-        final Interval collInterval = intervals.next(IntervalType.COMPOSITE, EnumSet.of(IntervalFlag.SNIPPABLE_CHILDREN));
+        final Interval collInterval = intervals.next(EnumSet.of(IntervalFlag.COMPOSITE, IntervalFlag.SNIPPABLE_CHILDREN));
         int i = 0;
         for (; i < minLength || (i < maxLength && shouldGenerateNext()); i++) {
             tmp[i] = next();

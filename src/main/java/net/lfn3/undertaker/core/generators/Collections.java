@@ -2,12 +2,13 @@ package net.lfn3.undertaker.core.generators;
 
 import net.lfn3.undertaker.core.Ranges;
 import net.lfn3.undertaker.core.intervals.Interval;
-import net.lfn3.undertaker.core.intervals.IntervalType;
+import net.lfn3.undertaker.core.intervals.IntervalFlag;
 import net.lfn3.undertaker.core.intervals.Intervals;
 import net.lfn3.undertaker.core.source.ByteSource;
 
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+import java.util.EnumSet;
 import java.util.function.Function;
 
 public class Collections {
@@ -22,14 +23,14 @@ public class Collections {
     }
 
     public <T> T[] array(Class<T> tClass, int minSize, int maxSize, Ranges r, Function<ByteBuffer, T> conversionFn) {
-        final Interval collInterval = intervals.next(IntervalType.COLLECTION);
+        final Interval collInterval = intervals.next(EnumSet.of(IntervalFlag.COLLECTION));
         final int size = getSize(minSize, maxSize);
 
         @SuppressWarnings("unchecked")
         final T[] out = (T[]) Array.newInstance(tClass, size);
 
         for (int i = 0; i < size; i++) {
-            final Interval elemInterval = intervals.next(IntervalType.SNIPPABLE);
+            final Interval elemInterval = intervals.next(EnumSet.of(IntervalFlag.SNIPPABLE));
             final T val = conversionFn.apply(byteSource.nextBytes(r));
             out[i] = val;
             intervals.done(elemInterval, val);
@@ -41,7 +42,7 @@ public class Collections {
     }
 
     int getSize(int minSize, int maxSize) {
-        final Interval collSizeInterval = intervals.next(IntervalType.COLLECTION_SIZE);
+        final Interval collSizeInterval = intervals.next(EnumSet.of(IntervalFlag.COLLECTION_SIZE));
 
         final int size = integers.next(minSize, maxSize);
 
@@ -50,14 +51,14 @@ public class Collections {
     }
 
     public int[] intArray(int minSize, int maxSize, Ranges r) {
-        final Interval collInterval = intervals.next(IntervalType.COLLECTION);
+        final Interval collInterval = intervals.next(EnumSet.of(IntervalFlag.COLLECTION));
         final int size = getSize(minSize, maxSize);
         byteSource.pregen(r.length * size);
 
         final int[] out = new int[size];
 
         for (int i = 0; i < size; i++) {
-            final Interval elemInterval = intervals.next(IntervalType.SNIPPABLE);
+            final Interval elemInterval = intervals.next(EnumSet.of(IntervalFlag.SNIPPABLE));
             final int val = byteSource.nextBytes(r).getInt(0);
             out[i] = val;
             intervals.done(elemInterval, val);

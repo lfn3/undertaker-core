@@ -3,13 +3,15 @@ package net.lfn3.undertaker.core.generators;
 import net.lfn3.undertaker.core.DevDebug;
 import net.lfn3.undertaker.core.Ranges;
 import net.lfn3.undertaker.core.intervals.Interval;
-import net.lfn3.undertaker.core.intervals.IntervalType;
+import net.lfn3.undertaker.core.intervals.IntervalFlag;
 import net.lfn3.undertaker.core.intervals.Intervals;
 import net.lfn3.undertaker.core.source.ByteSource;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.LongBuffer;
+import java.util.EnumSet;
+
 public class Longs {
     private static final Ranges DEFAULT_RANGES;
 
@@ -82,7 +84,7 @@ public class Longs {
     }
 
     public long next(Ranges ranges) {
-        final Interval interval = intervals.next(IntervalType.VALUE);
+        final Interval interval = intervals.next(EnumSet.of(IntervalFlag.VALUE));
         final ByteBuffer buf = byteSource.nextBytes(ranges);
         final long ret = buf.getLong(0);
 
@@ -101,7 +103,7 @@ public class Longs {
     }
 
     public long[] nextArray(final int minLength, final int maxLength) {
-        final Interval collInterval = intervals.next(IntervalType.COLLECTION);
+        final Interval collInterval = intervals.next(EnumSet.of(IntervalFlag.COLLECTION));
         final int size = collections.getSize(minLength, maxLength);
         final long[] out = new long[size];
 
@@ -126,7 +128,7 @@ public class Longs {
      * @param toFill array to fill with random longs
      */
     public void fill(final long[] toFill) {
-        final Interval collInterval = intervals.next(IntervalType.COLLECTION);
+        final Interval collInterval = intervals.next(EnumSet.of(IntervalFlag.COLLECTION));
         fillArray(toFill);
         intervals.done(collInterval, toFill);
     }
