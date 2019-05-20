@@ -42,14 +42,13 @@ public class ZeroingShrinkerTest {
         final Longs longs = new Longs(shrinker, intervals, new Integers(shrinker, intervals, booleans));
 
         final long first = longs.next();
-        shrinker.next();
         shrinker.reset();
+        shrinker.next();
         final long second = longs.next();
         shrinker.revertShrink();
-        shrinker.reset();
         final long firstAgain = longs.next();
-        shrinker.next();
         shrinker.reset();
+        shrinker.next();
         final long third = longs.next();
 
         Assert.assertNotEquals(first, second);

@@ -20,6 +20,14 @@ public class AlwaysMaxSource implements ByteSource {
         return buf;
     }
 
+    public ByteBuffer nextBytes(Ranges ranges, int repeat, boolean unique) {
+        if (unique) {
+            return null;
+        } else {
+            return nextBytes(ranges, repeat);
+        }
+    }
+
     @Override
     public void reset() {
 
