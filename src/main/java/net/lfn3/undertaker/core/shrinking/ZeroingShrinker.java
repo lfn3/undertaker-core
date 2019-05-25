@@ -56,4 +56,9 @@ public class ZeroingShrinker implements ShrinkingByteSource {
         bytesOffset = 0;
         bytes = Arrays.copyOf(backup, backup.length);
     }
+
+    @Override
+    public byte[] getBytes() {
+        return bytes;
+    }
 }

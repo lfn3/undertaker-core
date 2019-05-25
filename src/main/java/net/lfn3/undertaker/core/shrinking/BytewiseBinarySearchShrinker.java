@@ -92,4 +92,9 @@ public class BytewiseBinarySearchShrinker implements ShrinkingByteSource {
         bytes = Arrays.copyOf(backup, backup.length);
         bytesOffset = 0;
     }
+
+    @Override
+    public byte[] getBytes() {
+        return bytes;
+    }
 }

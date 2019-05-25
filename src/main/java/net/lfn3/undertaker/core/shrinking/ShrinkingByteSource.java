@@ -15,6 +15,8 @@ public interface ShrinkingByteSource extends ByteSource {
      */
     boolean isExhausted();
 
+    byte[] getBytes();
+
     default void confirmShrink() {
         reset();
         next();
