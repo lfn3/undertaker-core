@@ -11,6 +11,19 @@ import java.util.Random;
 
 public class ZeroingShrinkerTest {
     @Test
+    public void shouldSkipLeadingZeros() {
+        byte[] arr = new byte[]{0, 0, 0, 5};
+
+        ShrinkingByteSource shrinker = new ZeroingShrinker(arr);
+
+        final Intervals intervals = new Intervals();
+        final Booleans booleans = new Booleans(shrinker, intervals);
+        final Integers integers = new Integers(shrinker, intervals, booleans);
+
+        Assert.assertEquals(0, integers.next());
+    }
+
+    @Test
     public void shouldZeroOutValue() {
         byte[] arr = new byte[Long.BYTES];
 
@@ -22,7 +35,7 @@ public class ZeroingShrinkerTest {
         final Booleans booleans = new Booleans(shrinker, intervals);
         final Longs longs = new Longs(shrinker, intervals, new Integers(shrinker, intervals, booleans));
 
-        for (int i = 0; i < Long.BYTES - 1; i++) {
+        while(!shrinker.isExhausted()) {
             shrinker.next();
         }
 

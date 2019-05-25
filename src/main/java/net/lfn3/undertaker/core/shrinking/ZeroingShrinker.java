@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class ZeroingShrinker implements ShrinkingByteSource {
-    private int nextShrinkIdx;
+    private int nextSearchIdx;
 
     private int bytesOffset = 0;
     private byte[] bytes;
@@ -15,9 +15,9 @@ public class ZeroingShrinker implements ShrinkingByteSource {
 
     public ZeroingShrinker(final byte[] bytes) {
         this.bytes = bytes;
-        backup = Arrays.copyOf(bytes, bytes.length);
-        bytes[0] = 0;
-        nextShrinkIdx = 1;
+        this.nextSearchIdx = 0;
+
+        next();
     }
 
     @Override
@@ -37,8 +37,18 @@ public class ZeroingShrinker implements ShrinkingByteSource {
     @Override
     public void next() {
         backup = Arrays.copyOf(bytes, bytes.length);
-        bytes[nextShrinkIdx] = 0;
-        nextShrinkIdx += 1;
+        final int nextToZeroIdx = ShrinkUtil.firstNonZeroByteIndex(bytes, nextSearchIdx);
+        if (nextToZeroIdx == -1) {
+            nextSearchIdx = -1;
+            return;
+        }
+        bytes[nextToZeroIdx] = 0;
+        nextSearchIdx =  nextToZeroIdx + 1;
+    }
+
+    @Override
+    public boolean isExhausted() {
+        return nextSearchIdx == -1;
     }
 
     @Override

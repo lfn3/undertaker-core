@@ -6,6 +6,8 @@ import net.lfn3.undertaker.core.Ranges;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import static net.lfn3.undertaker.core.shrinking.ShrinkUtil.firstNonZeroByteIndex;
+
 public class BytewiseBinarySearchShrinker implements ShrinkingByteSource {
     private int nextShrinkIdx;
 
@@ -19,12 +21,7 @@ public class BytewiseBinarySearchShrinker implements ShrinkingByteSource {
     private byte[] backup;
 
     public BytewiseBinarySearchShrinker(final byte[] bytes) {
-        for (int i = 0; i < bytes.length; i++) {
-            if (bytes[i] != 0) {
-                nextShrinkIdx = i;
-                break;
-            }
-        }
+        nextShrinkIdx = firstNonZeroByteIndex(bytes);
 
         this.bytes = bytes;
         backup = Arrays.copyOf(bytes, bytes.length);
@@ -33,6 +30,9 @@ public class BytewiseBinarySearchShrinker implements ShrinkingByteSource {
     }
 
     private void initIdx() {
+        if (nextShrinkIdx == -1) {
+            return;
+        }
         high = bytes[nextShrinkIdx];
         low = 0;
         lastShrink = (byte) ((0xff & bytes[nextShrinkIdx]) / 2);
@@ -58,10 +58,14 @@ public class BytewiseBinarySearchShrinker implements ShrinkingByteSource {
 
     @Override
     public void next() {
+        if (nextShrinkIdx == -1) {
+            throw new IllegalStateException("This shrinker has exhausted the shrinking it can perform");
+        }
+
         backup = Arrays.copyOf(bytes, bytes.length);
 
         if (low == high) {
-            nextShrinkIdx++;
+            nextShrinkIdx = firstNonZeroByteIndex(bytes, nextShrinkIdx + 1);
             initIdx();
         } else {
             if (backoff) {
@@ -74,6 +78,11 @@ public class BytewiseBinarySearchShrinker implements ShrinkingByteSource {
                 lastShrink = next;
             }
         }
+    }
+
+    @Override
+    public boolean isExhausted() {
+        return nextShrinkIdx == -1;
     }
 
     @Override
