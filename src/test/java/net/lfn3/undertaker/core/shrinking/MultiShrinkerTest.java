@@ -5,6 +5,8 @@ import net.lfn3.undertaker.core.generators.Integers;
 import net.lfn3.undertaker.core.intervals.Intervals;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
@@ -14,7 +16,7 @@ public class MultiShrinkerTest {
     public void shouldBeAbleToMultishrink() {
         MultiShrinker multiShrinker = MultiShrinker.fromShrinkers(
                 new byte[]{0, 0, 0, 3},
-                ZeroingShrinker::new, BytewiseBinarySearchShrinker::new);
+                Arrays.asList(ZeroingShrinker::new, BytewiseBinarySearchShrinker::new));
 
         final Intervals intervals = new Intervals();
         Integers integers = new Integers(multiShrinker, intervals, new Booleans(multiShrinker, intervals));
@@ -28,19 +30,18 @@ public class MultiShrinkerTest {
     public void shouldMoveOnToNextShrinker() {
         MultiShrinker multiShrinker = MultiShrinker.fromShrinkers(
                 new byte[]{0, 0, 0, 3},
-                ZeroingShrinker::new, BytewiseBinarySearchShrinker::new);
+                Arrays.asList(ZeroingShrinker::new, BytewiseBinarySearchShrinker::new));
 
         final Intervals intervals = new Intervals();
         Integers integers = new Integers(multiShrinker, intervals, new Booleans(multiShrinker, intervals));
 
+        //Zeroing shrinker
         final int zero = integers.next();
-
         assertThat(zero, equalTo(0));
-
         multiShrinker.rejectShrink();
 
+        //Binary search shrinker.
         multiShrinker.next();
-
         assertThat(integers.next(), not(equalTo(3)));
     }
 }

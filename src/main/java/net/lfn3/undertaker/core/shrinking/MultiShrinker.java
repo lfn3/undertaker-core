@@ -5,9 +5,7 @@ import net.lfn3.undertaker.core.Ranges;
 import net.lfn3.undertaker.core.UserDebug;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Function;
 
 public class MultiShrinker implements ShrinkingByteSource {
@@ -15,11 +13,12 @@ public class MultiShrinker implements ShrinkingByteSource {
 
     private ShrinkingByteSource current;
 
-    public static MultiShrinker fromShrinkers(byte[] startingWith, Function<byte[], ShrinkingByteSource>... shrinkerConstructors) {
-        UserDebug.userAssert(shrinkerConstructors.length > 0, "Must pass at least one shrinker into a multishrinker");
+    public static MultiShrinker fromShrinkers(byte[] startingWith, Iterable<Function<byte[], ShrinkingByteSource>> shrinkerConstructors) {
+        final Iterator<Function<byte[], ShrinkingByteSource>> iter = shrinkerConstructors.iterator();
+        UserDebug.userAssert(iter.hasNext(), "Must pass at least one shrinker into a multishrinker");
 
-        ShrinkingByteSource first = shrinkerConstructors[0].apply(startingWith);
-        return new MultiShrinker(first, Arrays.asList(shrinkerConstructors).subList(1, shrinkerConstructors.length).iterator());
+        ShrinkingByteSource first = iter.next().apply(startingWith);
+        return new MultiShrinker(first, iter);
     }
 
     private MultiShrinker(ShrinkingByteSource current, Iterator<Function<byte[], ShrinkingByteSource>> restConstructors) {
